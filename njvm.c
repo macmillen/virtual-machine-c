@@ -3,6 +3,11 @@
 #include "njvm.h"
 #include "stack.h"
 
+// TODOS
+// vorzeichen beachten
+// newline nicht mit ausgeben
+// muss bei 000 anfangen?
+
 char version[] = "0";
 
 unsigned int *memory;
@@ -63,9 +68,9 @@ int main(int argc, char *argv[]) {
         } else if(!strcmp(argv[i], "--prog1")) {
             memory = code1;
         } else if(!strcmp(argv[i], "--prog2")) {
-            *memory = code2[0];
+            memory = code2;
         } else if(!strcmp(argv[i], "--prog3")) {
-            *memory = code3[0];
+            memory = code3;
         } 
     }
 
@@ -74,8 +79,7 @@ int main(int argc, char *argv[]) {
     do {
         ir = memory[pc];
         pc++;
-    }
-    while(execute(ir));
+    } while(execute(ir));
 
     printf("Ninja Virtual Machine stopped\n");
 }

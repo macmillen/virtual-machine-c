@@ -98,17 +98,17 @@ int execute(int ir) {
     val = ir & 0x00FFFFFF;
 
     switch(op) {
-        case HALT:  printf("\n%03d:\tHALT\t",    pc);         return halt();
-        case PUSHC: printf("\n%03d:\tPUSHC\t%d", pc, val);    pushc(); break;
-        case ADD:   printf("\n%03d:\tADD\t",     pc);         add();   break;
-        case SUB:   printf("\n%03d:\tSUB\t",     pc);         sub();   break;
-        case MUL:   printf("\n%03d:\tMUL\t",     pc);         mul();   break;
-        case DIV:   printf("\n%03d:\tDIV\t",     pc);         div_();  break;
-        case MOD:   printf("\n%03d:\tMOD\t",     pc);         mod();   break;
-        case RDINT: printf("\n%03d:\tRDINT\t",   pc);         rdint(); break;
-        case WRINT: printf("\n%03d:\tWRINT\t",   pc);         wrint(); break;
-        case RDCHR: printf("\n%03d:\tRDCHR\t",   pc);         rdchr(); break;
-        case WRCHR: printf("\n%03d:\tWRCHR\t",   pc);         wrchr(); break;
+        case HALT:  printf("\n%03d:\tHALT\t",    pc);      return halt();
+        case PUSHC: printf("\n%03d:\tPUSHC\t%d", pc, val); pushc(); break;
+        case ADD:   printf("\n%03d:\tADD\t",     pc);      add();   break;
+        case SUB:   printf("\n%03d:\tSUB\t",     pc);      sub();   break;
+        case MUL:   printf("\n%03d:\tMUL\t",     pc);      mul();   break;
+        case DIV:   printf("\n%03d:\tDIV\t",     pc);      div_();  break;
+        case MOD:   printf("\n%03d:\tMOD\t",     pc);      mod();   break;
+        case RDINT: printf("\n%03d:\tRDINT\t",   pc);      rdint(); break;
+        case WRINT: printf("\n%03d:\tWRINT\t",   pc);      wrint(); break;
+        case RDCHR: printf("\n%03d:\tRDCHR\t",   pc);      rdchr(); break;
+        case WRCHR: printf("\n%03d:\tWRCHR\t",   pc);      wrchr(); break;
     }
     return 1; 
 }
