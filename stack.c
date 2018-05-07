@@ -110,5 +110,5 @@ int execute(int ir) {
         case RDCHR: printf("\n%03d:\tRDCHR\t",   pc);         rdchr(); break;
         case WRCHR: printf("\n%03d:\tWRCHR\t",   pc);         wrchr(); break;
     }
-    return 1;
+    return 1; 
 }
