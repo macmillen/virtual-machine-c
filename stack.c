@@ -4,11 +4,11 @@
 
 int op;
 int val;
-int stack[1000];
+int stack[10000];
 int stackSize = 0;
 
 void push(int v) {
-    if(stackSize < 999) {
+    if(stackSize < 9999) {
         stack[stackSize] = v;
         stackSize++;
     } else {
@@ -72,6 +72,7 @@ void mod() {
 }
 
 void rdint() {
+    printf("Enter Int: ");
     int val;
     scanf("%d", &val);
     push(val);
@@ -83,6 +84,7 @@ void wrint() {
 }
 
 void rdchr() {
+    printf("Enter Char: ");
     char val = getchar();
     push(val);
 }
@@ -93,22 +95,41 @@ void wrchr() {
 }
 
 int execute(int ir) {
-
     op = ir >> 24;
-    val = ir & 0x00FFFFFF;
+    val = SIGN_EXTEND(ir & 0x00FFFFFF);
 
     switch(op) {
-        case HALT:  printf("\n%03d:\tHALT\t",    pc);      return halt();
-        case PUSHC: printf("\n%03d:\tPUSHC\t%d", pc, val); pushc(); break;
-        case ADD:   printf("\n%03d:\tADD\t",     pc);      add();   break;
-        case SUB:   printf("\n%03d:\tSUB\t",     pc);      sub();   break;
-        case MUL:   printf("\n%03d:\tMUL\t",     pc);      mul();   break;
-        case DIV:   printf("\n%03d:\tDIV\t",     pc);      div_();  break;
-        case MOD:   printf("\n%03d:\tMOD\t",     pc);      mod();   break;
-        case RDINT: printf("\n%03d:\tRDINT\t",   pc);      rdint(); break;
-        case WRINT: printf("\n%03d:\tWRINT\t",   pc);      wrint(); break;
-        case RDCHR: printf("\n%03d:\tRDCHR\t",   pc);      rdchr(); break;
-        case WRCHR: printf("\n%03d:\tWRCHR\t",   pc);      wrchr(); break;
+        case HALT:  return halt();
+        case PUSHC: pushc(); break;
+        case ADD:   add();   break;
+        case SUB:   sub();   break;
+        case MUL:   mul();   break;
+        case DIV:   div_();  break;
+        case MOD:   mod();   break;
+        case RDINT: rdint(); break;
+        case WRINT: wrint(); break;
+        case RDCHR: rdchr(); break;
+        case WRCHR: wrchr(); break;
     }
     return 1; 
+}
+
+int listProgram(int ir) {
+    op = ir >> 24;
+    val = SIGN_EXTEND(ir & 0x00FFFFFF);
+    
+    switch(op) {    
+        case HALT:  printf("\n%03d:\tHALT\t",    pc);       printf("\n"); return 0;
+        case PUSHC: printf("\n%03d:\tPUSHC\t%d", pc, val);  break;
+        case ADD:   printf("\n%03d:\tADD\t",     pc);       break;
+        case SUB:   printf("\n%03d:\tSUB\t",     pc);       break;
+        case MUL:   printf("\n%03d:\tMUL\t",     pc);       break;
+        case DIV:   printf("\n%03d:\tDIV\t",     pc);       break;
+        case MOD:   printf("\n%03d:\tMOD\t",     pc);       break;
+        case RDINT: printf("\n%03d:\tRDINT\t",   pc);       break;
+        case WRINT: printf("\n%03d:\tWRINT\t",   pc);       break;
+        case RDCHR: printf("\n%03d:\tRDCHR\t",   pc);       break;
+        case WRCHR: printf("\n%03d:\tWRCHR\t",   pc);       break;
+    }
+    return 1;
 }

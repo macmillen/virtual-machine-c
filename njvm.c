@@ -1,53 +1,28 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "njvm.h"
 #include "stack.h"
 
 // TODOS
 // vorzeichen beachten
-// newline nicht mit ausgeben
 // muss bei 000 anfangen?
 
-char version[] = "0";
+int version = 2;
+int versionBin;
+int numberOfInstructions;
+int numberOfGlobalVars;
 
+char format[4];
+
+unsigned int *globalVars;
 unsigned int *memory;
+unsigned int feld[10];
 unsigned int ir;
 
 unsigned int pc;
 
-unsigned int code1[] = {
-    (PUSHC << 24) | IMMEDIATE(3),
-    (PUSHC << 24) | IMMEDIATE(4), 
-    (ADD << 24),
-    (PUSHC << 24) | IMMEDIATE(10),
-    (PUSHC << 24) | IMMEDIATE(6),
-    (SUB << 24),
-    (MUL << 24),
-    (WRINT << 24),
-    (PUSHC << 24) | IMMEDIATE(10),
-    (WRCHR << 24),
-    (HALT << 24)
-};
-
-unsigned int code2[] = {
-    (PUSHC << 24) | IMMEDIATE(-2), 
-    (RDINT << 24), 
-    (MUL << 24),
-    (PUSHC << 24) | IMMEDIATE(3),
-    (ADD << 24),
-    (WRINT << 24),
-    (PUSHC << 24) | IMMEDIATE('\n'),
-    (WRCHR << 24),
-    (HALT << 24)
-};
-
-unsigned int code3[] = {
-    (RDCHR << 24),
-	(WRINT << 24),
-	(PUSHC << 24) | IMMEDIATE('\n'),
-	(WRCHR << 24),
-	(HALT << 24)
-};
+FILE *f;
 
 int main(int argc, char *argv[]) {
     printf("\n");
@@ -63,19 +38,65 @@ int main(int argc, char *argv[]) {
             printf("\t--help           show this help and exit\n");
             return 0;
         } else if(!strcmp(argv[i], "--version")) {
-            printf("Ninja Virtual Machine version %s (%s %s)\n", version, __DATE__, __TIME__);
+            printf("Ninja Virtual Machine version %d (%s %s)\n", version, __DATE__, __TIME__);
             return 0;
-        } else if(!strcmp(argv[i], "--prog1")) {
-            memory = code1;
-        } else if(!strcmp(argv[i], "--prog2")) {
-            memory = code2;
-        } else if(!strcmp(argv[i], "--prog3")) {
-            memory = code3;
-        } 
+        }
     }
 
+    f = fopen("prog1.bin", "r");
+    if(f == NULL) {
+        printf("Could not open file");
+        exit(99);
+    }
+
+    // READ FORMAT
+    if(fread (&format, sizeof (char), 4, f) != 4) {
+        printf("Overflow");
+        exit(99);
+    }
+    if(strncmp("NJBF", format, 4)) {
+        printf("Wrong binary format");
+        exit(99);
+    }
+
+    // READ VERSION
+    if(fread (&versionBin, sizeof (int), 4, f) != 4) {
+        printf("Overflow");
+        exit(99);
+    }
+    if(version != versionBin) {
+        printf("Version is not identical");
+        exit(99);
+    }
+    printf("%s",format);
     printf("\nNinja Virtual Machine started\n");
 
+    // READ NUMBER OF INSTRUCTIONS
+    if(fread(&numberOfInstructions, sizeof (int), 4, f) != 4) {
+        printf("Overflow");
+        exit(99);
+    }
+    memory = (int*) malloc(numberOfInstructions * 4);
+
+    // READ NUMBER OF VARIABLES FOR STATIC AREA
+    if(fread(&numberOfGlobalVars, sizeof (int), 4, f) != 4) {
+        printf("Overflow");
+        exit(99);
+    }
+    globalVars = (int*) malloc(numberOfGlobalVars * 4);
+
+    // READ REST OF THE FILE (INSTRUCTIONS)
+    if(fread(memory, sizeof (int), numberOfInstructions, f) != numberOfInstructions) {
+        printf("Overflow");
+        exit(99);
+    }
+
+    do {
+        ir = memory[pc];
+        pc++;
+    } while(listProgram(ir));
+
+    pc = 0;
     do {
         ir = memory[pc];
         pc++;
