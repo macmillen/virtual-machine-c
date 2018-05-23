@@ -5,18 +5,17 @@
 #include "stack.h"
 
 // TODOS
-// vorzeichen beachten
 // muss bei 000 anfangen?
 
-int version = 2;
-int versionBin;
-int numberOfInstructions;
-int numberOfGlobalVars;
+unsigned int version = 2;
+unsigned int versionBin;
+unsigned int numberOfInstructions;
+unsigned int numberOfGlobalVars;
 
 char format[4];
 
 unsigned int *globalVars;
-unsigned int *memory;
+int *memory;
 unsigned int feld[10];
 unsigned int ir;
 
@@ -60,7 +59,7 @@ int main(int argc, char *argv[]) {
     }
 
     // READ VERSION
-    if(fread (&versionBin, sizeof (int), 4, f) != 4) {
+    if(fread (&versionBin, sizeof (unsigned int), 1, f) != 1) {
         printf("Overflow");
         exit(99);
     }
@@ -72,18 +71,18 @@ int main(int argc, char *argv[]) {
     printf("\nNinja Virtual Machine started\n");
 
     // READ NUMBER OF INSTRUCTIONS
-    if(fread(&numberOfInstructions, sizeof (int), 4, f) != 4) {
+    if(fread(&numberOfInstructions, sizeof (unsigned int), 1, f) != 1) {
         printf("Overflow");
         exit(99);
     }
     memory = (int*) malloc(numberOfInstructions * 4);
 
     // READ NUMBER OF VARIABLES FOR STATIC AREA
-    if(fread(&numberOfGlobalVars, sizeof (int), 4, f) != 4) {
+    if(fread(&numberOfGlobalVars, sizeof (unsigned int), 1, f) != 1) {
         printf("Overflow");
         exit(99);
     }
-    globalVars = (int*) malloc(numberOfGlobalVars * 4);
+    globalVars = (unsigned int*) malloc(numberOfGlobalVars * 4);
 
     // READ REST OF THE FILE (INSTRUCTIONS)
     if(fread(memory, sizeof (int), numberOfInstructions, f) != numberOfInstructions) {

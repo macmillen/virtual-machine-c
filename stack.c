@@ -96,7 +96,7 @@ void wrchr() {
 
 int execute(int ir) {
     op = ir >> 24;
-    val = SIGN_EXTEND(ir & 0x00FFFFFF);
+    val = SIGN_EXTEND(IMMEDIATE(ir));
 
     switch(op) {
         case HALT:  return halt();
