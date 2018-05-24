@@ -4,22 +4,25 @@
 
 int op;
 int val;
+const int stackS = 10000;
 int stack[10000];
-int stackSize = 0;
+int stackH = 0;
+
+int stackH_G = 0;
 
 void push(int v) {
-    if(stackSize < 9999) {
-        stack[stackSize] = v;
-        stackSize++;
+    if(stackH < 9999) {
+        stack[stackH] = v;
+        stackH++;
     } else {
         exit(-1);
     }
 }
 
 int pop() {
-    if(stackSize > 0) {
-        stackSize--;
-        return stack[stackSize];
+    if(stackH > 0) {
+        stackH--;
+        return stack[stackH];
     } else {
         exit(-1);
     }
@@ -94,6 +97,24 @@ void wrchr() {
     printf("%c", val);
 }
 
+void pushg() {
+    if(stackH_G < stackS_G) {
+        stack_G[stackH_G] = val;
+        stackH_G++;
+    } else {
+        exit(-1);
+    }
+}
+
+int popg() {
+    if(stackH_G > 0) {
+        stackH_G--;
+        return stack_G[stackH_G];
+    } else {
+        exit(-1);
+    }
+}
+
 int execute(int ir) {
     op = ir >> 24;
     val = SIGN_EXTEND(IMMEDIATE(ir));
@@ -130,6 +151,12 @@ int listProgram(int ir) {
         case WRINT: printf("\n%03d:\tWRINT\t",   pc);       break;
         case RDCHR: printf("\n%03d:\tRDCHR\t",   pc);       break;
         case WRCHR: printf("\n%03d:\tWRCHR\t",   pc);       break;
+        case PUSHG: printf("\n%03d:\tPUSHG\t",   pc);       break;
+        case POPG:  printf("\n%03d:\tPOPG\t",    pc);       break;
+        case ASF:   printf("\n%03d:\tASF\t",     pc);       break;
+        case RSF:   printf("\n%03d:\tRSF\t",     pc);       break;
+        case PUSHL: printf("\n%03d:\tPUSHL\t",   pc);       break;
+        case POPL:  printf("\n%03d:\tPOPL\t",    pc);       break;
     }
     return 1;
 }

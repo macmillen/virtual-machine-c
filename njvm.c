@@ -10,11 +10,11 @@
 unsigned int version = 2;
 unsigned int versionBin;
 unsigned int numberOfInstructions;
-unsigned int numberOfGlobalVars;
+unsigned int stackS_G;
 
 char format[4];
 
-unsigned int *globalVars;
+unsigned int *stack_G;
 int *memory;
 unsigned int feld[10];
 unsigned int ir;
@@ -22,6 +22,7 @@ unsigned int ir;
 unsigned int pc;
 
 FILE *f;
+char *file;
 
 int main(int argc, char *argv[]) {
     printf("\n");
@@ -39,10 +40,10 @@ int main(int argc, char *argv[]) {
         } else if(!strcmp(argv[i], "--version")) {
             printf("Ninja Virtual Machine version %d (%s %s)\n", version, __DATE__, __TIME__);
             return 0;
+        } else {
+            f = fopen(argv[i], "r");
         }
     }
-
-    f = fopen("prog1.bin", "r");
     if(f == NULL) {
         printf("Could not open file");
         exit(99);
@@ -78,17 +79,18 @@ int main(int argc, char *argv[]) {
     memory = (int*) malloc(numberOfInstructions * 4);
 
     // READ NUMBER OF VARIABLES FOR STATIC AREA
-    if(fread(&numberOfGlobalVars, sizeof (unsigned int), 1, f) != 1) {
+    if(fread(&stackS_G, sizeof (unsigned int), 1, f) != 1) {
         printf("Overflow");
         exit(99);
     }
-    globalVars = (unsigned int*) malloc(numberOfGlobalVars * 4);
+    stack_G = (unsigned int*) malloc(stackS_G * 4);
 
     // READ REST OF THE FILE (INSTRUCTIONS)
     if(fread(memory, sizeof (int), numberOfInstructions, f) != numberOfInstructions) {
         printf("Overflow");
         exit(99);
     }
+    fclose(f);
 
     do {
         ir = memory[pc];
@@ -102,4 +104,5 @@ int main(int argc, char *argv[]) {
     } while(execute(ir));
 
     printf("Ninja Virtual Machine stopped\n");
+    getchar();
 }
