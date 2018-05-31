@@ -6,23 +6,24 @@ int op;
 int val;
 const int stackS = 10000;
 int stack[10000];
-int stackH = 0;
+int sp = 0;
+int fp = 0;
 
 int stackH_G = 0;
 
 void push(int v) {
-    if(stackH < 9999) {
-        stack[stackH] = v;
-        stackH++;
+    if(sp < 9999) {
+        stack[sp] = v;
+        sp++;
     } else {
         exit(-1);
     }
 }
 
 int pop() {
-    if(stackH > 0) {
-        stackH--;
-        return stack[stackH];
+    if(sp > 0) {
+        sp--;
+        return stack[sp];
     } else {
         exit(-1);
     }
@@ -98,21 +99,31 @@ void wrchr() {
 }
 
 void pushg() {
-    if(stackH_G < stackS_G) {
-        stack_G[stackH_G] = val;
-        stackH_G++;
-    } else {
-        exit(-1);
-    }
+    push(stack_G[val]);
 }
 
-int popg() {
-    if(stackH_G > 0) {
-        stackH_G--;
-        return stack_G[stackH_G];
-    } else {
-        exit(-1);
-    }
+void popg() {
+    stack_G[val] = pop();
+}
+
+void asf() {
+    push(fp);
+    fp = sp;
+    sp = sp + val;
+}
+
+void rsf() {
+    sp = fp;
+    fp = pop();
+}
+
+void pushl() {  // pushes val from variable onto stack
+    push(stack[fp + val]);
+}
+
+void popl() {   // stores var
+    int v = pop();
+    stack[fp + val] = v;
 }
 
 int execute(int ir) {
@@ -131,6 +142,12 @@ int execute(int ir) {
         case WRINT: wrint(); break;
         case RDCHR: rdchr(); break;
         case WRCHR: wrchr(); break;
+        case PUSHG: pushg(); break;
+        case POPG:  popg();  break;
+        case ASF:   asf();   break;
+        case RSF:   rsf();   break;
+        case PUSHL: pushl(); break;
+        case POPL:  popl();  break;
     }
     return 1; 
 }
@@ -140,23 +157,23 @@ int listProgram(int ir) {
     val = SIGN_EXTEND(ir & 0x00FFFFFF);
     
     switch(op) {    
-        case HALT:  printf("\n%03d:\tHALT\t",    pc);       printf("\n"); return 0;
-        case PUSHC: printf("\n%03d:\tPUSHC\t%d", pc, val);  break;
-        case ADD:   printf("\n%03d:\tADD\t",     pc);       break;
-        case SUB:   printf("\n%03d:\tSUB\t",     pc);       break;
-        case MUL:   printf("\n%03d:\tMUL\t",     pc);       break;
-        case DIV:   printf("\n%03d:\tDIV\t",     pc);       break;
-        case MOD:   printf("\n%03d:\tMOD\t",     pc);       break;
-        case RDINT: printf("\n%03d:\tRDINT\t",   pc);       break;
-        case WRINT: printf("\n%03d:\tWRINT\t",   pc);       break;
-        case RDCHR: printf("\n%03d:\tRDCHR\t",   pc);       break;
-        case WRCHR: printf("\n%03d:\tWRCHR\t",   pc);       break;
-        case PUSHG: printf("\n%03d:\tPUSHG\t",   pc);       break;
-        case POPG:  printf("\n%03d:\tPOPG\t",    pc);       break;
-        case ASF:   printf("\n%03d:\tASF\t",     pc);       break;
-        case RSF:   printf("\n%03d:\tRSF\t",     pc);       break;
-        case PUSHL: printf("\n%03d:\tPUSHL\t",   pc);       break;
-        case POPL:  printf("\n%03d:\tPOPL\t",    pc);       break;
+        case HALT:  printf("\n%03d:\tHALT\t\n",  pc);      return 0;
+        case PUSHC: printf("\n%03d:\tPUSHC\t%d", pc, val); break;
+        case ADD:   printf("\n%03d:\tADD\t",     pc);      break;
+        case SUB:   printf("\n%03d:\tSUB\t",     pc);      break;
+        case MUL:   printf("\n%03d:\tMUL\t",     pc);      break;
+        case DIV:   printf("\n%03d:\tDIV\t",     pc);      break;
+        case MOD:   printf("\n%03d:\tMOD\t",     pc);      break;
+        case RDINT: printf("\n%03d:\tRDINT\t",   pc);      break;
+        case WRINT: printf("\n%03d:\tWRINT\t",   pc);      break;
+        case RDCHR: printf("\n%03d:\tRDCHR\t",   pc);      break;
+        case WRCHR: printf("\n%03d:\tWRCHR\t",   pc);      break;
+        case PUSHG: printf("\n%03d:\tPUSHG\t%d", pc, val); break;
+        case POPG:  printf("\n%03d:\tPOPG\t%d",  pc, val); break;
+        case ASF:   printf("\n%03d:\tASF\t%d",   pc, val); break;
+        case RSF:   printf("\n%03d:\tRSF\t",     pc);      break;
+        case PUSHL: printf("\n%03d:\tPUSHL\t%d", pc, val); break;
+        case POPL:  printf("\n%03d:\tPOPL\t%d",  pc, val); break;
     }
     return 1;
 }
