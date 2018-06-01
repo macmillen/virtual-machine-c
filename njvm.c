@@ -24,7 +24,7 @@ unsigned int ir;
 unsigned int pc;
 
 FILE *f = NULL;
-char *file;
+char *fileName;
 
 bool debug = false;
 
@@ -51,13 +51,16 @@ int main(int argc, char *argv[]) {
             debug = true;
         } else {
             f = fopen(argv[i], "r");
-            if(debug) {
-                printf("DEBUG: file '../programs/prog6.bin' loaded (code size = 27, data size = 2)");
-            }
+            fileName = (char*) malloc(strlen(argv[i]));
+            fileName = argv[i];
         }
     }
     
     checkInput();
+
+    if(debug) {
+        printf("DEBUG: file '%s' loaded (code size = %d, data size = %d)\n", fileName, numberOfInstructions, stackS_G);
+    }
 
     pc = 0;
     do {

@@ -39,6 +39,18 @@
             "problemMatcher": [
                 "$gcc"
             ]
+        },
+        {
+            "label": "nja",
+            "type": "shell",
+            "command": "./res_3/nja",
+            "args": [
+                "programs/prog5.asm",
+                "programs/prog5.bin"
+            ],
+            "problemMatcher": [
+                "$gcc"
+            ]
         }
     ]
 }

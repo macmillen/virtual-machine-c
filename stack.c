@@ -230,6 +230,7 @@ void listProgram(int pc, bool all) {
         if(!all) return;
     } while(1);
 }
+
 int execute(int ir) {
     op = ir >> 24;
     val = SIGN_EXTEND(IMMEDIATE(ir));
@@ -246,7 +247,29 @@ int execute(int ir) {
                 printf("DEBUG: inspect, list, breakpoint, step, run, quit?\n");
                 scanf("%s", input);
                 if(!strcmp(input, "inspect")) {
-
+                    printf("DEBUG [inspect]: stack, data?\n");
+                    char in[100];
+                    scanf("%s", in);
+                    if(!strcmp(in, "stack")) {
+                        for(int i = sp; i >= 0; i--) {
+                            if(sp == fp) {
+                                printf("sp, fp\t--->\t%04d:\txxxx\n", i);
+                            } else if(i == sp) {
+                                printf("sp\t--->\t%04d:\txxxx\n", i);
+                            } else if(i == fp) {
+                                printf("fp\t--->\t%04d:\t%d\n", i, stack[i]);
+                            } else {
+                                printf("\t\t%04d:\t%d\n", i, stack[i]);
+                            }
+                        }
+                        printf("                --- bottom of stack ---\n");
+                    } else if(!strcmp(in, "data")) {
+                        for(int i = 0; i < stackS_G; i++) {
+                            printf("data[%04d]:\t%d\n", i, stack_G[i]);
+                        }
+                        printf("        --- end of data ---\n");
+                    }
+                    continue;
                 } else if(!strcmp(input, "list")) {
                     listProgram(0, true);
                     printf("        --- end of code ---\n");
@@ -258,13 +281,14 @@ int execute(int ir) {
                     int pos = 0;
                     scanf("%d", &pos);
                     breakpoints[pos - 1] = 1;
-                    printf("DEBUG [breakpoint]: now set at %d", pos - 1);
+                    printf("DEBUG [breakpoint]: now set at %d\n", pos - 1);
                     continue;
                 } else if(!strcmp(input, "step")) {
+                    // do nothing
                 } else if(!strcmp(input, "run")) {
                     running = true;
                 } else if(!strcmp(input, "quit")) {
-
+                    return 0;
                 } else {
                     continue;
                 }
