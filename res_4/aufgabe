@@ -1,0 +1,35 @@
+KSP Aufgabe 4
+Jetzt wird's ernst... ;-) 
+Mit der Loesung dieser Aufgabe steht Ihnen das komplette Ninja (mit Ausnahme der Array- und Record-Objekte) zur Verfuegung. Sie koennen damit z.B. die folgenden Programme ausfuehren: 
+a) ggT 
+b) n! rekursiv 
+c) n! iterativ 
+Aber schoen der Reihe nach...
+Neue Instruktionen der VM
+1. Hier ist eine Diskussion der Instruktionen zum Unterprogrammaufruf und hier eine Liste aller Instruktionen der VM dieser Version. 
+
+2. Realisieren Sie Unterprogrammspruenge und -rueckspruenge mit den Instruktionen "call" und "ret". Hier ist ein Testprogramm ohne Argumente und ohne Rueckgabewert . Sie sollten die Ausfuehrung mit Hilfe Ihres Debuggers im Einzelschrittverfahren genau verfolgen koennen. 
+
+3. Implementieren Sie die Instruktion "drop" und testen Sie den Zugriff auf die Argumente einer Prozedur mit diesem Testprogramm . 
+
+4. Fuegen Sie das Rueckgaberegister zur Maschinenarchitektur hinzu und implementieren Sie die Instruktionen "pushr" und "popr". Sie koennen die Rueckgabe eines Wertes mit diesem Testprogramm ueberpruefen. 
+
+5. Dann sollte schliesslich dieses Testprogramm ohne weitere Arbeit funktionieren. 
+
+6. Implementieren Sie die Instruktion "dup", die den obersten Stackeintrag dupliziert: ... n --> ... n n 
+
+7. Der zu dieser Aufgabenstellung gehoerende Assembler ist natuerlich auch verfuegbar: 
+nja 
+
+8. Zu guter letzt hier wieder die Referenzimplementierung: 
+njvm
+Der Ninja-Compiler
+Nun gibt's eine erste Version des Ninja-Compilers - noch ohne Arrays, Records und anderen Schnickschnack, aber mit Prozeduren und Funktionen, Kontrollstrukturen, Zuweisungen und Ausdruecken. Die Grammatik zusammen mit den Tokens und den vordefinierten Bezeichnern beschreibt, wie ein korrektes Ninja-Programm (in unserem noch etwas reduzierten Sprachumfang) aussieht. 
+
+1. Uebersetzen Sie die drei ganz oben genannten Testprogramme mit Hilfe des Ninja-Compilers. Der Output ist Ninja-Assembler und kann z.B. mit einem Texteditor angeschaut werden. Versuchen Sie, jedes vom Compiler generierte Assembler-Statement einer Ninja-Quelltext-Anweisung zuzuordnen. Wenn Sie Fragen dazu haben, diskutieren Sie diese bitte mit den Betreuern im Praktikum! 
+
+2. Assemblieren Sie die drei Testprogramme und lassen Sie sie durch Ihre VM ausfuehren. Verfolgen Sie die Ausfuehrung mit dem Debugger Ihrer VM. 
+
+3. Schreiben Sie mindestens fuenf weitere Testprogramme, entweder in Ninja oder in Assembler, um sicherzugehen, dass die VM korrekt funktioniert. Loten Sie dabei auch Konstruktionen aus, die bisher nicht Bestandteil der Tests waren. Ein Beispiel: Kann eine Funktion in ihrem Return-Statement eine andere Funktion aufrufen? Geht das auch geschachtelt? 
+
+4. Welche Sequenz von Instruktionen erzeugt der Compiler fuer das logische "und" und das logische "oder"? Erklaeren Sie genau, wie damit die Kurzschlussauswertung implementiert wird!
