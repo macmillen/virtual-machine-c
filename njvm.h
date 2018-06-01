@@ -1,3 +1,6 @@
+#include <stdbool.h>
+#include <stdio.h>
+
 #ifndef __NJVM_H_
 #define __NJVM_H_
 

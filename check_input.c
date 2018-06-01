@@ -1,5 +1,8 @@
-#include "njvm.h"
 #include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "njvm.h"
+#include "stack.h"
 
 void checkInput() {
     if(f == NULL) {
@@ -35,7 +38,8 @@ void checkInput() {
         exit(99);
     }
     memory = (int*) malloc(numberOfInstructions * 4);
-
+    breakpoints = (int*) calloc(numberOfInstructions, sizeof(int));
+    
     // READ NUMBER OF VARIABLES FOR STATIC AREA
     if(fread(&stackS_G, sizeof (unsigned int), 1, f) != 1) {
         printf("Overflow");

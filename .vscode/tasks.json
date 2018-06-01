@@ -15,7 +15,8 @@
                 "-o",
                 "njvm",
                 "njvm.c",
-                "stack.c"
+                "stack.c",
+                "check_input.c"
             ],
             "group": {
                 "kind": "build",

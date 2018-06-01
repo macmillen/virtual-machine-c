@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "njvm.h"
 #include "stack.h"
+#include "check_input.h"
 
 // TODOS
 // muss bei 000 anfangen?
@@ -22,7 +23,7 @@ unsigned int ir;
 
 unsigned int pc;
 
-FILE *f;
+FILE *f = NULL;
 char *file;
 
 bool debug = false;
@@ -65,5 +66,6 @@ int main(int argc, char *argv[]) {
     } while(execute(ir));
 
     printf("Ninja Virtual Machine stopped\n");
+    getchar();
     getchar();
 }

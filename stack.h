@@ -1,2 +1,4 @@
+void listProgram(int pc, bool all);
 int execute(int ir);
-int listProgram(int ir);
+
+int *breakpoints;
