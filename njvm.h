@@ -4,6 +4,14 @@
 extern unsigned int pc;
 extern unsigned int *stack_G;
 extern unsigned int stackS_G;
+extern unsigned int ir;
+extern bool debug;
+extern FILE *f;
+extern unsigned int numberOfInstructions;
+extern unsigned int version;
+extern unsigned int versionBin;
+extern char format[4];
+extern int *memory;
 
 #define IMMEDIATE(x) ((x) & 0x00FFFFFF)
 #define SIGN_EXTEND(i) ((i) & 0x00800000 ? (i) | 0xFF000000 : (i))
@@ -34,5 +42,16 @@ extern unsigned int stackS_G;
 #define RSF 14
 #define PUSHL 15
 #define POPL 16
+
+#define EQ 17
+#define NE 18
+#define LT 19
+#define LE 20
+#define GT 21
+#define GE 22
+
+#define JMP 23
+#define BRF 24
+#define BRT 25
 
 #endif
