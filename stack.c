@@ -84,7 +84,6 @@ void mod(void) {
 }
 
 void rdint(void) {
-    printf("Enter Int: ");
     int val;
     scanf("%d", &val);
     push(val);
@@ -96,7 +95,6 @@ void wrint(void) {
 }
 
 void rdchr(void) {
-    printf("Enter Char: ");
     char val = getchar();
     push(val);
 }
@@ -224,45 +222,45 @@ void listProgram(int pc, bool all) {
     int val = 0;
     do {
         ir = memory[pc];
-        pc++;
 
         op = ir >> 24;
         val = SIGN_EXTEND(ir & 0x00FFFFFF);
         
         switch(op) {    
-            case HALT:  printf("%03d:\tHALT\t\n",  pc);      return;
-            case PUSHC: printf("%03d:\tPUSHC\t%d", pc, val); break;
-            case ADD:   printf("%03d:\tADD\t",     pc);      break;
-            case SUB:   printf("%03d:\tSUB\t",     pc);      break;
-            case MUL:   printf("%03d:\tMUL\t",     pc);      break;
-            case DIV:   printf("%03d:\tDIV\t",     pc);      break;
-            case MOD:   printf("%03d:\tMOD\t",     pc);      break;
-            case RDINT: printf("%03d:\tRDINT\t",   pc);      break;
-            case WRINT: printf("%03d:\tWRINT\t",   pc);      break;
-            case RDCHR: printf("%03d:\tRDCHR\t",   pc);      break;
-            case WRCHR: printf("%03d:\tWRCHR\t",   pc);      break;
-            case PUSHG: printf("%03d:\tPUSHG\t%d", pc, val); break;
-            case POPG:  printf("%03d:\tPOPG\t%d",  pc, val); break;
-            case ASF:   printf("%03d:\tASF\t%d",   pc, val); break;
-            case RSF:   printf("%03d:\tRSF\t",     pc);      break;
-            case PUSHL: printf("%03d:\tPUSHL\t%d", pc, val); break;
-            case POPL:  printf("%03d:\tPOPL\t%d",  pc, val); break;
-            case EQ:    printf("%03d:\tEQ\t",      pc);      break;
-            case NE:    printf("%03d:\tNE\t",      pc);      break;
-            case LT:    printf("%03d:\tLT\t",      pc);      break;
-            case LE:    printf("%03d:\tLE\t",      pc);      break;
-            case GT:    printf("%03d:\tGT\t",      pc);      break;
-            case GE:    printf("%03d:\tGE\t",      pc);      break;
-            case JMP:   printf("%03d:\tJMP\t%d",   pc, val); break;
-            case BRF:   printf("%03d:\tBRF\t%d",   pc, val); break;
-            case BRT:   printf("%03d:\tBRT\t%d",   pc, val); break;
-            case CALL:  printf("%03d:\tCALL\t%d",  pc, val); break;
-            case RET:   printf("%03d:\tRET\t",     pc);      break;
-            case DROP:  printf("%03d:\tDROP\t%d",  pc, val); break;
-            case PUSHR: printf("%03d:\tPUSHR\t",   pc);      break;
-            case POPR:  printf("%03d:\tPOPR\t",    pc);      break;
-            case DUP:   printf("%03d:\tDUP\t",     pc);      break;
+            case HALT:  printf("%04d:\tHALT\t\n",  pc);      return;
+            case PUSHC: printf("%04d:\tPUSHC\t%d", pc, val); break;
+            case ADD:   printf("%04d:\tADD\t",     pc);      break;
+            case SUB:   printf("%04d:\tSUB\t",     pc);      break;
+            case MUL:   printf("%04d:\tMUL\t",     pc);      break;
+            case DIV:   printf("%04d:\tDIV\t",     pc);      break;
+            case MOD:   printf("%04d:\tMOD\t",     pc);      break;
+            case RDINT: printf("%04d:\tRDINT\t",   pc);      break;
+            case WRINT: printf("%04d:\tWRINT\t",   pc);      break;
+            case RDCHR: printf("%04d:\tRDCHR\t",   pc);      break;
+            case WRCHR: printf("%04d:\tWRCHR\t",   pc);      break;
+            case PUSHG: printf("%04d:\tPUSHG\t%d", pc, val); break;
+            case POPG:  printf("%04d:\tPOPG\t%d",  pc, val); break;
+            case ASF:   printf("%04d:\tASF\t%d",   pc, val); break;
+            case RSF:   printf("%04d:\tRSF\t",     pc);      break;
+            case PUSHL: printf("%04d:\tPUSHL\t%d", pc, val); break;
+            case POPL:  printf("%04d:\tPOPL\t%d",  pc, val); break;
+            case EQ:    printf("%04d:\tEQ\t",      pc);      break;
+            case NE:    printf("%04d:\tNE\t",      pc);      break;
+            case LT:    printf("%04d:\tLT\t",      pc);      break;
+            case LE:    printf("%04d:\tLE\t",      pc);      break;
+            case GT:    printf("%04d:\tGT\t",      pc);      break;
+            case GE:    printf("%04d:\tGE\t",      pc);      break;
+            case JMP:   printf("%04d:\tJMP\t%d",   pc, val); break;
+            case BRF:   printf("%04d:\tBRF\t%d",   pc, val); break;
+            case BRT:   printf("%04d:\tBRT\t%d",   pc, val); break;
+            case CALL:  printf("%04d:\tCALL\t%d",  pc, val); break;
+            case RET:   printf("%04d:\tRET\t",     pc);      break;
+            case DROP:  printf("%04d:\tDROP\t%d",  pc, val); break;
+            case PUSHR: printf("%04d:\tPUSHR\t",   pc);      break;
+            case POPR:  printf("%04d:\tPOPR\t",    pc);      break;
+            case DUP:   printf("%04d:\tDUP\t",     pc);      break;
         }
+        pc++;
         printf("\n");
         if(!all) return;
     } while(1);
@@ -312,13 +310,19 @@ int execute(int ir) {
                     printf("        --- end of code ---\n");
                     continue;
                 } else if(!strcmp(input, "breakpoint")) {
-                    printf("DEBUG [breakpoint]: cleared\n");
-                    printf("DEBUG [breakpoint]: address to set, -1 to clear, <ret> for no change?\n");
+                    printf("DEBUG [breakpoint]: address to set, -1 to clear\n");
                     running = false;
                     int pos = 0;
                     scanf("%d", &pos);
-                    breakpoints[pos - 1] = 1;
-                    printf("DEBUG [breakpoint]: now set at %d\n", pos - 1);
+                    if(pos < numberOfInstructions && pos >= 0) {
+                        breakpoints[pos] = 1;
+                        printf("DEBUG [breakpoint]: now set at %d\n", pos - 1);
+                    }
+                    if(pos == -1) {
+                        for(int i = 0; i < numberOfInstructions; i++) {
+                            breakpoints[i] = 0;
+                        }
+                    }
                     continue;
                 } else if(!strcmp(input, "step")) {
                     // do nothing

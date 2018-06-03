@@ -29,7 +29,6 @@ void checkInput(void) {
         printf("Version is not identical");
         exit(99);
     }
-    printf("\nNinja Virtual Machine started\n");
 
     // READ NUMBER OF INSTRUCTIONS
     if(fread(&numberOfInstructions, sizeof (unsigned int), 1, f) != 1) {

@@ -1,0 +1,42 @@
+Spezifikation des Debuggers
+
+Befehle:
+inspect, list, breakpoint, step, run, quit
+
+##### (1) inspect    #####
+
+Nach der Eingabe kommt eine Unterabfrage, wo man sich zwischen "stack" und "data" entscheiden muss.
+#1) Bei Eingabe von "stack":
+    Nun wird der Inhalt des stacks zum gegenwärtigen Zeitpunkt ausgegeben inklusive der Positionen 
+    des Frame Pointers und des Stack Pointers
+#2) Bei Eingabe von "data":
+    Nun werden alle globalen Variablen aufgelistet
+
+##### (2) list       #####
+
+Nach der Eingabe werden alle Assembler-Befehle aufgelistet inklusive Immediate-Werten und 
+Program-Counter.
+
+##### (3) breakpoint #####
+
+Nach der Eingabe kommt eine Unterabfrage, wo man sich zwischen dem Setzen eines breakpoints und dem 
+Löschen aller breakpoints entscheiden kann.
+#1) Bei Eingabe einer Zahl von 0 bis NumberOfInstructions, wobei NumberOfInstructions die Summe aller 
+    Befehle sind (bei einer Zahl außerhalb des Intervalls [-1, NumberOfInstructions] kommt man wieder 
+    zurück ins Debug-Menü):
+    Nun wird ein breakpoint an der angegebenen Stelle gesetzt.
+#2) Bei Eingabe der Zahl -1:
+    Nun werden alle breakpoints gelöscht.
+
+##### (3) step       #####
+
+Nach der Eingabe führt das Programm den nächsten Befehl aus und geht zurück ins Debug-Menü.
+
+##### (3) run        #####
+
+Nach der Eingabe führt das Programm alle Befehle aus bis zum nächsten breakpoint. Wenn kein breakpoint 
+gesetzt wurde läuft es bis zum Ende (bzw. bis zum nächsten read-Befehl).
+
+##### (3) quit       #####
+
+Beendet das Programm

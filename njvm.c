@@ -7,7 +7,6 @@
 #include "check_input.h"
 
 // TODOS
-// muss bei 000 anfangen?
 
 unsigned int version = 4;
 unsigned int versionBin;
@@ -29,7 +28,6 @@ char *fileName;
 bool debug = false;
 
 int main(int argc, char *argv[]) {
-    printf("\n");
     /*
     for(int i = 0; i < argc; ++i) {
         printf("argv[%d]: %s\n", i, argv[i]);
@@ -61,6 +59,8 @@ int main(int argc, char *argv[]) {
     if(debug) {
         printf("DEBUG: file '%s' loaded (code size = %d, data size = %d)\n", fileName, numberOfInstructions, stackS_G);
     }
+    
+    printf("Ninja Virtual Machine started\n");
 
     pc = 0;
     do {
@@ -69,6 +69,4 @@ int main(int argc, char *argv[]) {
     } while(execute(ir));
 
     printf("Ninja Virtual Machine stopped\n");
-    getchar();
-    getchar();
 }
