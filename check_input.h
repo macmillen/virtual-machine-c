@@ -1,1 +1,1 @@
-void checkInput();
+void checkInput(void);

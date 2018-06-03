@@ -11,6 +11,7 @@ const int stackS = 10000;
 int stack[10000];
 int sp = 0;
 int fp = 0;
+int retVal;
 
 int stackH_G = 0;
 
@@ -27,7 +28,7 @@ void push(int v) {
     }
 }
 
-int pop() {
+int pop(void) {
     if(sp > 0) {
         sp--;
         return stack[sp];
@@ -36,33 +37,33 @@ int pop() {
     }
 }
 
-int halt() {
+int halt(void) {
     return 0;
 }
 
-void pushc() {
+void pushc(void) {
     push(val);
 }
 
-void add() {
+void add(void) {
     int val1 = pop();
     int val2 = pop();
     push(val2 + val1);
 }
 
-void sub() {
+void sub(void) {
     int val1 = pop();
     int val2 = pop();
     push(val2 - val1);
 }
 
-void mul() {
+void mul(void) {
     int val1 = pop();
     int val2 = pop();
     push(val2 * val1);
 }
 
-void div_() {
+void div_(void) {
     int val1 = pop();
     int val2 = pop();
     if(val1 != 0) {
@@ -72,7 +73,7 @@ void div_() {
     }
 }
 
-void mod() {
+void mod(void) {
     int val1 = pop();
     int val2 = pop();
     if(val1 != 0) {
@@ -82,110 +83,140 @@ void mod() {
     }
 }
 
-void rdint() {
+void rdint(void) {
     printf("Enter Int: ");
     int val;
     scanf("%d", &val);
     push(val);
 }
 
-void wrint() {
+void wrint(void) {
     int val = pop();
     printf("%d", val);
 }
 
-void rdchr() {
+void rdchr(void) {
     printf("Enter Char: ");
     char val = getchar();
     push(val);
 }
 
-void wrchr() {
+void wrchr(void) {
     char val = pop();
     printf("%c", val);
 }
 
-void pushg() {
+void pushg(void) {
     push(stack_G[val]);
 }
 
-void popg() {
+void popg(void) {
     stack_G[val] = pop();
 }
 
-void asf() {
+void asf(void) {
     push(fp);
     fp = sp;
     sp = sp + val;
 }
 
-void rsf() {
+void rsf(void) {
     sp = fp;
     fp = pop();
 }
 
-void pushl() {
+void pushl(void) {
     push(stack[fp + val]);
 }
 
-void popl() {
+void popl(void) {
     int v = pop();
     stack[fp + val] = v;
 }
 
-void eq() {
+void eq(void) {
     int n1 = pop();
     int n2 = pop();
     push(n2 == n1);
 }
 
-void ne() {
+void ne(void) {
     int n1 = pop();
     int n2 = pop();
     push(n2 != n1);
 }
 
-void lt() {
+void lt(void) {
     int n1 = pop();
     int n2 = pop();
     push(n2 < n1);
 }
 
-void le() {
+void le(void) {
     int n1 = pop();
     int n2 = pop();
     push(n2 <= n1);
 }
 
-void gt() {
+void gt(void) {
     int n1 = pop();
     int n2 = pop();
     push(n2 > n1);
 }
 
-void ge() {
+void ge(void) {
     int n1 = pop();
     int n2 = pop();
     push(n2 >= n1);
 }
 
-void jmp() {
+void jmp(void) {
     pc = val;
 }
 
-void brf() {
+void brf(void) {
     int b = pop();
     if(!b) {
         pc = val;
     }
 }
 
-void brt() {
+void brt(void) {
     int b = pop();
     if(b) {
         pc = val;
     }
 }
+
+void call(void) {
+    push(pc);
+    jmp();
+}
+
+void ret(void) {
+    pc = pop();
+}
+
+void drop(void) {
+    for(int i = 0; i < val; i++) {
+        pop();
+    }
+}
+
+void pushr(void) {
+    push(retVal);
+}
+
+void popr(void) {
+    retVal = pop();
+}
+
+void dup(void) {
+    int v = pop();
+    push(v);
+    push(v);
+}
+
 
 void listProgram(int pc, bool all) {
     int ir = 0;
@@ -225,6 +256,12 @@ void listProgram(int pc, bool all) {
             case JMP:   printf("%03d:\tJMP\t%d",   pc, val); break;
             case BRF:   printf("%03d:\tBRF\t%d",   pc, val); break;
             case BRT:   printf("%03d:\tBRT\t%d",   pc, val); break;
+            case CALL:  printf("%03d:\tCALL\t%d",  pc, val); break;
+            case RET:   printf("%03d:\tRET\t",     pc);      break;
+            case DROP:  printf("%03d:\tDROP\t%d",  pc, val); break;
+            case PUSHR: printf("%03d:\tPUSHR\t",   pc);      break;
+            case POPR:  printf("%03d:\tPOPR\t",    pc);      break;
+            case DUP:   printf("%03d:\tDUP\t",     pc);      break;
         }
         printf("\n");
         if(!all) return;
@@ -324,6 +361,12 @@ int execute(int ir) {
         case JMP:   jmp();   break;
         case BRF:   brf();   break;
         case BRT:   brt();   break;
+        case CALL:  call();  break;
+        case RET:   ret();   break;
+        case DROP:  drop();  break;
+        case PUSHR: pushr(); break;
+        case POPR:  popr();  break;
+        case DUP:   dup();   break;
     }
 
     return 1; 

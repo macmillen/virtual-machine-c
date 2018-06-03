@@ -4,7 +4,7 @@
 #include "njvm.h"
 #include "stack.h"
 
-void checkInput() {
+void checkInput(void) {
     if(f == NULL) {
         printf("Could not open file");
         exit(99);

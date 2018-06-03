@@ -9,7 +9,7 @@
 // TODOS
 // muss bei 000 anfangen?
 
-unsigned int version = 3;
+unsigned int version = 4;
 unsigned int versionBin;
 unsigned int numberOfInstructions;
 unsigned int stackS_G;

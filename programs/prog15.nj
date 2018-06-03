@@ -1,0 +1,18 @@
+void main() {
+    local Integer a;
+    local Integer b;
+    local Integer c;
+    func();
+}
+
+Integer func() {
+  local Integer r;
+  local Integer n;
+  n = 1;
+  r = 1;
+  while (n < 10) {
+    r = r * n;
+    n = n + 1;
+  }
+  return r;
+}
