@@ -4,8 +4,21 @@
 #ifndef __NJVM_H_
 #define __NJVM_H_
 
+typedef struct {
+    unsigned int size; /* byte count of payload data */
+    unsigned char data[1]; /* payload data , size as needed */
+} *ObjRef;
+
+typedef struct {
+    bool isObjRef;
+    union {
+        ObjRef objRef; /* used if isObjRef=TRUE */
+        int number; /* used if isObjRef=FALSE */
+    } u;
+} StackSlot;
+
 extern unsigned int pc;
-extern unsigned int *stack_G;
+extern ObjRef *stack_G;
 extern unsigned int stackS_G;
 extern unsigned int ir;
 extern bool debug;

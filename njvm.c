@@ -8,14 +8,14 @@
 
 // TODOS
 
-unsigned int version = 4;
+unsigned int version = 5;
 unsigned int versionBin;
 unsigned int numberOfInstructions;
 unsigned int stackS_G;
 
 char format[4];
 
-unsigned int *stack_G;
+ObjRef *stack_G;
 int *memory;
 unsigned int feld[10];
 unsigned int ir;

@@ -8,10 +8,10 @@
 int op;
 int val;
 const int stackS = 10000;
-int stack[10000];
+StackSlot stack[10000];
 int sp = 0;
 int fp = 0;
-int retVal;
+ObjRef retVal;
 
 int stackH_G = 0;
 
@@ -20,54 +20,79 @@ int *breakpoints;
 bool running = false;
 
 void push(int v) {
-    if(sp < 9999) {
-        stack[sp] = v;
+    if(sp < stackS - 1) {
+        stack[sp].isObjRef = false;
+        stack[sp].u.number = v;
         sp++;
     } else {
         exit(-1);
     }
 }
 
+void pusho(ObjRef objRef) {
+    if(sp < stackS - 1) {
+        stack[sp].isObjRef = true;
+        stack[sp].u.objRef = objRef;
+         sp++;
+     } else {
+         exit(-1);
+     }
+ }
+
 int pop(void) {
     if(sp > 0) {
         sp--;
-        return stack[sp];
+        if(stack[sp].isObjRef) {
+            return *(int *)stack[sp].u.objRef -> data;
+        } else {
+            return stack[sp].u.number;
+        }
     } else {
         exit(-1);
     }
+}
+
+ObjRef createInt(int v) {
+    ObjRef objRef;
+    objRef = malloc(sizeof(unsigned int) + sizeof(int));
+    objRef -> size = sizeof(int);
+    *(int *) objRef -> data = v;
+
+    return objRef;
 }
 
 int halt(void) {
     return 0;
 }
 
-void pushc(void) {
-    push(val);
+void pushc(int v) {
+    ObjRef objRef = createInt(v);
+    pusho(objRef);
 }
 
 void add(void) {
     int val1 = pop();
     int val2 = pop();
-    push(val2 + val1);
+    pushc(val2 + val1);
 }
 
 void sub(void) {
     int val1 = pop();
     int val2 = pop();
-    push(val2 - val1);
+    pushc(val2 - val1);
 }
 
 void mul(void) {
     int val1 = pop();
     int val2 = pop();
-    push(val2 * val1);
+    pushc(val2 * val1);
 }
 
 void div_(void) {
     int val1 = pop();
     int val2 = pop();
     if(val1 != 0) {
-        push(val2 / val1);
+        pushc(val2 / val1);
     } else {
         exit(-1);
     }
@@ -77,7 +102,7 @@ void mod(void) {
     int val1 = pop();
     int val2 = pop();
     if(val1 != 0) {
-        push(val2 % val1);
+        pushc(val2 % val1);
     } else {
         exit(-1);
     }
@@ -86,7 +111,7 @@ void mod(void) {
 void rdint(void) {
     int val;
     scanf("%d", &val);
-    push(val);
+    pushc(val);
 }
 
 void wrint(void) {
@@ -96,7 +121,7 @@ void wrint(void) {
 
 void rdchr(void) {
     char val = getchar();
-    push(val);
+    pushc(val);
 }
 
 void wrchr(void) {
@@ -105,11 +130,12 @@ void wrchr(void) {
 }
 
 void pushg(void) {
-    push(stack_G[val]);
+    pusho(stack_G[val]);
 }
 
 void popg(void) {
-    stack_G[val] = pop();
+    stack_G[val] = stack[sp - 1].u.objRef;
+    pop();
 }
 
 void asf(void) {
@@ -124,48 +150,49 @@ void rsf(void) {
 }
 
 void pushl(void) {
-    push(stack[fp + val]);
+    pusho(stack[fp + val].u.objRef);
 }
 
 void popl(void) {
-    int v = pop();
-    stack[fp + val] = v;
+    pop();
+    stack[fp + val].isObjRef = true;
+    stack[fp + val].u.objRef = stack[sp].u.objRef;
 }
 
 void eq(void) {
     int n1 = pop();
     int n2 = pop();
-    push(n2 == n1);
+    pushc(n2 == n1);
 }
 
 void ne(void) {
     int n1 = pop();
     int n2 = pop();
-    push(n2 != n1);
+    pushc(n2 != n1);
 }
 
 void lt(void) {
     int n1 = pop();
     int n2 = pop();
-    push(n2 < n1);
+    pushc(n2 < n1);
 }
 
 void le(void) {
     int n1 = pop();
     int n2 = pop();
-    push(n2 <= n1);
+    pushc(n2 <= n1);
 }
 
 void gt(void) {
     int n1 = pop();
     int n2 = pop();
-    push(n2 > n1);
+    pushc(n2 > n1);
 }
 
 void ge(void) {
     int n1 = pop();
     int n2 = pop();
-    push(n2 >= n1);
+    pushc(n2 >= n1);
 }
 
 void jmp(void) {
@@ -202,17 +229,18 @@ void drop(void) {
 }
 
 void pushr(void) {
-    push(retVal);
+    pusho(retVal);
 }
 
 void popr(void) {
-    retVal = pop();
+    ObjRef v = createInt(pop());
+    retVal = v;
 }
 
 void dup(void) {
     int v = pop();
-    push(v);
-    push(v);
+    pushc(v);
+    pushc(v);
 }
 
 
@@ -340,7 +368,7 @@ int execute(int ir) {
 
     switch(op) {
         case HALT:  return halt();
-        case PUSHC: pushc(); break;
+        case PUSHC: pushc(val); break;
         case ADD:   add();   break;
         case SUB:   sub();   break;
         case MUL:   mul();   break;
