@@ -28,15 +28,15 @@ Löschen aller breakpoints entscheiden kann.
 #2) Bei Eingabe der Zahl -1:
     Nun werden alle breakpoints gelöscht.
 
-##### (3) step       #####
+##### (4) step       #####
 
 Nach der Eingabe führt das Programm den nächsten Befehl aus und geht zurück ins Debug-Menü.
 
-##### (3) run        #####
+##### (5) run        #####
 
 Nach der Eingabe führt das Programm alle Befehle aus bis zum nächsten breakpoint. Wenn kein breakpoint 
 gesetzt wurde läuft es bis zum Ende (bzw. bis zum nächsten read-Befehl).
 
-##### (3) quit       #####
+##### (6) quit       #####
 
 Beendet das Programm

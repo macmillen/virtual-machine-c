@@ -1,5 +1,5 @@
 //
-// compute the factorial of a number recursively
+// compute the factorial of a number iteratively
 //
 
 void main() {
@@ -17,9 +17,11 @@ void main() {
 }
 
 Integer factorial(Integer n) {
-  if (n == 0) {
-    return 1;
-  } else {
-    return n * factorial(n - 1);
+  local Integer r;
+  r = 1;
+  while (n > 0) {
+    r = r * n;
+    n = n - 1;
   }
+  return r;
 }

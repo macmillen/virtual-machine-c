@@ -1,0 +1,11 @@
+KSP Aufgabe 5
+1. Die Aufgabenstellung hier ist ganz einfach, bedingt aber einige Aenderungen in der VM: Verlagern Sie die Rechenobjekte (bis jetzt sind das ja nur ganze Zahlen) auf den Heap und halten Sie in der Static Data Area, auf dem Stack und im Rueckgabewertregister nur noch Zeiger in den Heap. Der Speicherplatz fuer die Objekte wird mit malloc() beschafft und innerhalb Ihres Programms nicht wieder freigegeben (das ist naemlich ohne Garbage Collector praktisch nicht moeglich, und wie ein solches Teil funktioniert, werden wir in der Vorlesung erst spaeter behandeln). Was genau sind unsere "Rechenobjekte"? Nun, das ist einfach: alle Objekte in der Static Data Area, alle Objekte auf dem Stack (mit Ausnahme von Ruecksprungadressen und Framepointerwerten) sowie der Inhalt des Rueckgabewertregisters. Alle anderen in der VM benutzten Dinge, wie z.B. Codespeicher, Programmzaehler, Stackpointer und Framepointer sind keine Rechenobjekte: man kann sie von einem Ninja-Programm aus nicht unmittelbar beeinflussen. 
+
+2. Der Instruktionssatz ist gegenueber Aufgabe 4 unveraendert; auch der Compiler und der Assembler bleiben exakt gleich (bis auf die Versionsnummern). 
+
+3. Ihr Debugger muss beim Anzeigen des Stacks kenntlich machen, welche Eintraege Objektreferenzen und welche Eintraege einfache Zahlen (Ruecksprungadressen und gespeicherte Framepointer) sind. 
+
+4. Bauen Sie in Ihren Debugger eine Moeglichkeit ein, Objekte zu inspizieren. Warum? Wenn Sie z.B. wissen wollen, welche Zahl ganz oben auf dem Stack liegt, dann lassen Sie sich den Stack anzeigen. Dort finden Sie aber nur die Adresse des Objektes auf dem Heap. Also wuenschen Sie sich eine Moeglichkeit, den Inhalt eines Objektes bei gegebener Objektadresse anzuschauen. Das wird im Uebrigen auch in der uebernaechsten Aufgabe gebraucht, wenn in Objekten Referenzen auf andere Objekte gespeichert werden. 
+
+5. Hier wie immer die Referenzimplementierung: 
+njvm
