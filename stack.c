@@ -62,10 +62,6 @@ ObjRef createInt(int v) {
     objRef = malloc(sizeof(unsigned int) + sizeof(int));
     objRef -> size = sizeof(int);
     *(int *) objRef -> data = v;
-
-    stack[sp].isObjRef = true;
-    stack[sp].u.objRef = objRef;
-
     return objRef;
 }
 
@@ -83,30 +79,21 @@ void add(void) {
 void sub(void) {
     int val1 = pop();
     int val2 = pop();
-    ObjRef objRef = createInt();
-
-    *(int *) objRef -> data = val2 - val1;
-
-    pusho(objRef);
+    pushc(val2 - val1);
 }
 
 void mul(void) {
     int val1 = pop();
     int val2 = pop();
-    ObjRef objRef = createInt();
-    *(int *) objRef -> data = val2 * val1;
-
-    pusho(objRef);
+    pushc(val2 * val1);
 }
 
 void div_(void) {
     int val1 = pop();
     int val2 = pop();
-    ObjRef objRef = createInt();
-
+    
     if(val1 != 0) {
-        *(int *) objRef -> data = val2 / val1;
-        pusho(objRef);
+        pushc(val2 / val1);
     } else {
         exit(-1);
     }
@@ -115,11 +102,9 @@ void div_(void) {
 void mod(void) {
     int val1 = pop();
     int val2 = pop();
-    ObjRef objRef = createInt();
 
     if(val1 != 0) {
-        *(int *) objRef -> data = val2 % val1;
-        pusho(objRef);
+        pushc(val2 % val1);
     } else {
         exit(-1);
     }
@@ -127,8 +112,7 @@ void mod(void) {
 
 void rdint(void) {
     scanf("%d", &val);
-    ObjRef objRef = createInt();
-    pusho(objRef);
+    pushc(val);
 }
 
 void wrint(void) {
@@ -138,8 +122,7 @@ void wrint(void) {
 
 void rdchr(void) {
     val = getchar();
-    ObjRef objRef = createInt();
-    pusho(objRef);
+    pushc(val);
 }
 
 void wrchr(void) {
@@ -173,7 +156,7 @@ void pushl(void) {
 
 void popl(void) {
     int v = pop();
-    ObjRef objRef = createInt();
+    ObjRef objRef = createInt(v);
     stack[fp + val].isObjRef = true;
     stack[fp + val].u.objRef = objRef;
     *(int *) stack[fp + val].u.objRef -> data = v;
