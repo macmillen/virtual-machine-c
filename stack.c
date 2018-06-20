@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "njvm.h"
+#include "bigint/build/include.h"
 
 int op;
 int val;

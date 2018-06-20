@@ -1,0 +1,19 @@
+KSP Aufgabe 6
+1. In dieser Version der VM wollen wir als Rechenobjekte beliebig grosse ganze Zahlen zulassen. Diese neuen Rechenobjekte ersetzen die alten 32-Bit-Zahlen und haben ihren Speicherplatz ebenfalls auf dem Heap. Auf dem Stack, in der Static Data Area und im Rueckgabewertregister stehen wie gehabt Zeiger auf die Rechenobjekte. 
+
+2. Die Algorithmen zum Rechnen mit beliebig grossen ganzen Zahlen ("Multiple Precision Arithmetic") sind entnommen aus [D. Knuth: The Art of Computer Programming, Vol. 2, Seminumerical Algorithms]. Eine Implementierung in C finden Sie hier . Entpacken Sie das Paket und studieren Sie die darin enthaltene Datei README . Bauen Sie das Paket und lassen Sie die Tests laufen! Machen Sie sich mit der Struktur der Zahlendarstellung vertraut! Hinweise: Jede Ziffer der Zahl ist ein Byte, d.h. die Zahldarstellung benutzt die Basis 256. Die Ziffern werden in einem genuegend grossen Array gespeichert, das zusammen mit der Groessenangabe in einer Struktur ("Objekt") auf dem Heap steht. 
+
+3. Die Multiple Precision Arithmetic braucht eine winzige Support-Bibliothek, deren Funktionalitaet aber in Ihrer VM schon enthalten ist. Stellen Sie die benoetigten Funktionen aus Ihrer VM zur Verfuegung! 
+
+4. Studieren Sie das Benutzer-Programmierinterface und passen Sie Ihre VM an. Achten Sie darauf, ALLE Operationen mit Rechenobjekten der Bibliothek zu ueberlassen; dazu gehoeren auch die Vergleiche! 
+
+5. Der Instruktionssatz ist gegenueber Aufgabe 5 unveraendert; auch der Compiler und der Assembler bleiben exakt gleich (bis auf die Versionsnummern). 
+
+6. Hier wie immer die Referenzimplementierung: 
+njvm
+Aufgaben fuer Tests
+a) Schreiben Sie ein kleines Ninja-Programm zur Berechnung von 100! = 1*2*3*..*100. Faellt Ihnen am Ergebnis etwas auf? Kann das denn ueberhaupt richtig sein? 
+
+b) Die Fibonacci-Folge ist definiert als F(0) = 0, F(1) = 1, und F(n) = F(n-1) + F(n-2) fuer alle n > 1. Schreiben Sie ein kleines Ninja-Programm zur Berechnung von F(100). Hinweis: Nur die iterative Version wird in annehmbarer Zeit zum Ergebnis fuehren! 
+
+c) Schreiben Sie ein kleines Ninja-Programm zur Berechnung der Summe aller Brueche 1/i fuer i = 1..100 (die einhundertste "harmonische Zahl"). Das Ergebnis soll als exakter Bruch in gekuerzter Darstellung angegeben werden. Hinweise: Halten Sie den Zaehler und den Nenner des Ergebnisses in zwei verschiedenen Variablen. Wenn Sie einen neuen Term addieren wollen, muessen Sie die Brueche auf einen gemeinsamen Nenner bringen. Beim Kuerzen (das Sie entweder bei jeder Rechnung oder aber einmal ganz am Ende aller Rechnungen durchfuehren koennen) leistet der groesste gemeinsame Teiler gute Dienste! Koennen Sie die Zahl in Dezimalschreibweise mit z.B. 10 Stellen nach dem Komma ausgeben? Dazu sind nur Ganzzahloperationen noetig!
