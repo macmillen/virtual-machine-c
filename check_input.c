@@ -43,7 +43,7 @@ void checkInput(void) {
         printf("Overflow");
         exit(99);
     }
-    stack_G = (unsigned int*) malloc(stackS_G * 4);
+    stack_G = (ObjRef*) malloc(stackS_G * 4);
 
     // READ REST OF THE FILE (INSTRUCTIONS)
     if(fread(memory, sizeof (int), numberOfInstructions, f) != numberOfInstructions) {

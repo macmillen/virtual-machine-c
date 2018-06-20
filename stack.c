@@ -309,35 +309,55 @@ int execute(int ir) {
                 listProgram(pc - 1, false);
                 printf("DEBUG: inspect, list, breakpoint, step, run, quit?\n");
                 scanf("%s", input);
-                if(!strcmp(input, "inspect")) {
-                    printf("DEBUG [inspect]: stack, data?\n");
+                if(!strncmp(input, "inspect", 1)) {
+                    printf("DEBUG [inspect]: stack, data, object?\n");
                     char in[100];
                     scanf("%s", in);
-                    if(!strcmp(in, "stack")) {
+                    if(!strncmp(in, "stack", 1)) {
                         for(int i = sp; i >= 0; i--) {
-                            if(sp == fp) {
-                                printf("sp, fp\t--->\t%04d:\txxxx\n", i);
+                            bool isObjRef = stack[i].isObjRef;
+                            if(i == sp && sp == fp) {
+                                printf("sp, fp\t--->\t%04d:\t(xxxxxx) xxxxxx\n", i);
                             } else if(i == sp) {
-                                printf("sp\t--->\t%04d:\txxxx\n", i);
+                                printf("sp\t--->\t%04d:\t(xxxxxx) xxxxxx\n", i);
                             } else if(i == fp) {
-                                printf("fp\t--->\t%04d:\t%d\n", i, stack[i]);
+                                if(isObjRef) {
+                                    printf("fp\t--->\t%04d:\t(%s) %p\n", i, "objref", (void*)stack[i].u.objRef);
+                                } else {
+                                    printf("fp\t--->\t%04d:\t(%s) %d\n", i, "number", stack[i].u.number);
+                                }
                             } else {
-                                printf("\t\t%04d:\t%d\n", i, stack[i]);
+                                if(isObjRef) {
+                                    printf("\t\t%04d:\t(%s) %p\n", i, "objref", (void*)stack[i].u.objRef);
+                                } else {
+                                    printf("\t\t%04d:\t(%s) %d\n", i, "number", stack[i].u.number);
+                                }
                             }
                         }
                         printf("                --- bottom of stack ---\n");
-                    } else if(!strcmp(in, "data")) {
+                    } else if(!strncmp(in, "data", 1)) {
                         for(int i = 0; i < stackS_G; i++) {
-                            printf("data[%04d]:\t%d\n", i, stack_G[i]);
+                            printf("data[%04d]:\t%s %p\n", i, "(objref)", (void*)stack_G[i]);
                         }
                         printf("        --- end of data ---\n");
+                    } else if(!strncmp(in, "object", 1)) {
+                        printf("object reference?\n");
+                        char ref[30];
+                        scanf("%s", ref);
+                        long unsigned int nux;
+                        sscanf(ref, "%lx", &nux);
+                        for(int y = 0; y < stackS_G; y++) {
+                            if((long unsigned int)*(stack_G + y) == nux) {
+                                printf("value = %d\n", (int)(stack_G[y] -> data[0]));
+                            }
+                        }
                     }
                     continue;
-                } else if(!strcmp(input, "list")) {
+                } else if(!strncmp(input, "list", 1)) {
                     listProgram(0, true);
                     printf("        --- end of code ---\n");
                     continue;
-                } else if(!strcmp(input, "breakpoint")) {
+                } else if(!strncmp(input, "breakpoint", 1)) {
                     printf("DEBUG [breakpoint]: address to set, -1 to clear\n");
                     running = false;
                     int pos = 0;
@@ -352,11 +372,11 @@ int execute(int ir) {
                         }
                     }
                     continue;
-                } else if(!strcmp(input, "step")) {
+                } else if(!strncmp(input, "step", 1)) {
                     // do nothing
-                } else if(!strcmp(input, "run")) {
+                } else if(!strncmp(input, "run", 1)) {
                     running = true;
-                } else if(!strcmp(input, "quit")) {
+                } else if(!strncmp(input, "quit", 1)) {
                     return 0;
                 } else {
                     continue;
