@@ -1,13 +1,9 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include "bigint/build/include/support.h"
 
 #ifndef __NJVM_H_
 #define __NJVM_H_
-
-typedef struct {
-    unsigned int size; /* byte count of payload data */
-    unsigned char data[1]; /* payload data , size as needed */
-} *ObjRef;
 
 typedef struct {
     bool isObjRef;

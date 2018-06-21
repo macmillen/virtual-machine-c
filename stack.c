@@ -4,7 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include "njvm.h"
-#include "bigint/build/include.h"
+#include "bigint/build/include/bigint.h"
+#include "bigint/build/include/support.h"
 
 int op;
 int val;
@@ -20,7 +21,7 @@ int *breakpoints;
 
 bool running = false;
 
-void push(int v) {
+void pusha(int v) {
     if(sp < stackS - 1) {
         stack[sp].isObjRef = false;
         stack[sp].u.number = v;
@@ -34,32 +35,28 @@ void pusho(ObjRef objRef) {
     if(sp < stackS - 1) {
         stack[sp].isObjRef = true;
         stack[sp].u.objRef = objRef;
-         sp++;
-     } else {
-         exit(-1);
-     }
- }
-
-int pop(void) {
-    if(sp > 0) {
-        sp--;
-        if(stack[sp].isObjRef) {
-            return *(int *)stack[sp].u.objRef -> data;
-        } else {
-            return stack[sp].u.number;
-        }
+        sp++;
     } else {
         exit(-1);
     }
 }
 
-ObjRef createInt(int v) {
-    ObjRef objRef;
-    objRef = malloc(sizeof(unsigned int) + sizeof(int));
-    objRef -> size = sizeof(int);
-    *(int *) objRef -> data = v;
+int popa(void) {
+    if(sp > 0 && !stack[sp - 1].isObjRef) {
+        sp--;
+        return stack[sp].u.number;
+    } else {
+        exit(-1);
+    }
+}
 
-    return objRef;
+ObjRef popo(void) {
+    if(sp > 0 && stack[sp - 1].isObjRef) {
+        sp--;
+        return stack[sp].u.objRef;
+    } else {
+        exit(-1);
+    }
 }
 
 int halt(void) {
@@ -67,57 +64,53 @@ int halt(void) {
 }
 
 void pushc(int v) {
-    ObjRef objRef = createInt(v);
-    pusho(objRef);
+    bigFromInt(v);
+    pusho(bip.res);
 }
 
 void add(void) {
-    int val1 = pop();
-    int val2 = pop();
-    pushc(val2 + val1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigAdd();
+    pusho(bip.res);
 }
 
 void sub(void) {
-    int val1 = pop();
-    int val2 = pop();
-    pushc(val2 - val1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigSub();
+    pusho(bip.res);
 }
 
 void mul(void) {
-    int val1 = pop();
-    int val2 = pop();
-    pushc(val2 * val1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigMul();
+    pusho(bip.res);
 }
 
 void div_(void) {
-    int val1 = pop();
-    int val2 = pop();
-    if(val1 != 0) {
-        pushc(val2 / val1);
-    } else {
-        exit(-1);
-    }
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigDiv();
+    pusho(bip.res);
 }
 
 void mod(void) {
-    int val1 = pop();
-    int val2 = pop();
-    if(val1 != 0) {
-        pushc(val2 % val1);
-    } else {
-        exit(-1);
-    }
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigDiv();
+    pusho(bip.rem);
 }
 
 void rdint(void) {
-    int val;
-    scanf("%d", &val);
-    pushc(val);
+    bigRead(stdin);
+    pusho(bip.res);
 }
 
 void wrint(void) {
-    int val = pop();
-    printf("%d", val);
+    bip.op1 = popo();
+    bigPrint(stdout);
 }
 
 void rdchr(void) {
@@ -126,8 +119,9 @@ void rdchr(void) {
 }
 
 void wrchr(void) {
-    char val = pop();
-    printf("%c", val);
+    bip.op1 = popo();
+    char res = bigToInt();
+    printf("%c", res);
 }
 
 void pushg(void) {
@@ -135,19 +129,18 @@ void pushg(void) {
 }
 
 void popg(void) {
-    stack_G[val] = stack[sp - 1].u.objRef;
-    pop();
+    stack_G[val] = popo();
 }
 
 void asf(void) {
-    push(fp);
+    pusha(fp);
     fp = sp;
     sp = sp + val;
 }
 
 void rsf(void) {
     sp = fp;
-    fp = pop();
+    fp = popa();
 }
 
 void pushl(void) {
@@ -155,45 +148,51 @@ void pushl(void) {
 }
 
 void popl(void) {
-    pop();
+    ObjRef v = popo();
     stack[fp + val].isObjRef = true;
-    stack[fp + val].u.objRef = stack[sp].u.objRef;
+    stack[fp + val].u.objRef = v;
 }
 
 void eq(void) {
-    int n1 = pop();
-    int n2 = pop();
-    pushc(n2 == n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res == 0);
 }
 
 void ne(void) {
-    int n1 = pop();
-    int n2 = pop();
-    pushc(n2 != n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res != 0);
 }
 
 void lt(void) {
-    int n1 = pop();
-    int n2 = pop();
-    pushc(n2 < n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res < 0);
 }
 
 void le(void) {
-    int n1 = pop();
-    int n2 = pop();
-    pushc(n2 <= n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res < 0 || res == 0);
 }
 
 void gt(void) {
-    int n1 = pop();
-    int n2 = pop();
-    pushc(n2 > n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res > 0);
 }
 
 void ge(void) {
-    int n1 = pop();
-    int n2 = pop();
-    pushc(n2 >= n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res > 0 || res == 0);
 }
 
 void jmp(void) {
@@ -201,31 +200,33 @@ void jmp(void) {
 }
 
 void brf(void) {
-    int b = pop();
+    bip.op1 = popo();
+    int b = bigToInt();
     if(!b) {
         pc = val;
     }
 }
 
 void brt(void) {
-    int b = pop();
+    bip.op1 = popo();
+    int b = bigToInt();
     if(b) {
         pc = val;
     }
 }
 
 void call(void) {
-    push(pc);
+    pusha(pc);
     jmp();
 }
 
 void ret(void) {
-    pc = pop();
+    pc = popa();
 }
 
 void drop(void) {
     for(int i = 0; i < val; i++) {
-        pop();
+        popo();
     }
 }
 
@@ -234,16 +235,15 @@ void pushr(void) {
 }
 
 void popr(void) {
-    ObjRef v = createInt(pop());
+    ObjRef v = popo();
     retVal = v;
 }
 
-void dup(void) {
-    int v = pop();
-    pushc(v);
-    pushc(v);
+void dup(void) { //TODO: cloning object
+    ObjRef v = popo();
+    pusho(v);
+    pusho(v);
 }
-
 
 void listProgram(int pc, bool all) {
     int ir = 0;

@@ -2,7 +2,7 @@
 void main() {
   local Integer n;
   local Integer m;
-  n = 100;
+  n = readInteger();
   m = factorial(n);
   writeInteger(n);
   writeCharacter('!');

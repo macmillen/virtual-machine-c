@@ -16,7 +16,9 @@
                 "njvm",
                 "njvm.c",
                 "stack.c",
-                "check_input.c"
+                "check_input.c",
+                "bigint/src/bigint.c",
+                "bigint/src/support.c"
             ],
             "group": {
                 "kind": "build",

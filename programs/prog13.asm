@@ -1,7 +1,7 @@
 //
 // version
 //
-	.vers	5
+	.vers	6
 
 //
 // execution framework
@@ -123,27 +123,28 @@ __0:
 // Integer factorial(Integer)
 //
 _factorial:
-	asf	0
-	pushl	-3
-	pushc	0
-	eq
-	brf	__2
+	asf	1
 	pushc	1
-	popr
-	jmp	__1
+	popl	0
 	jmp	__3
 __2:
+	pushl	0
 	pushl	-3
+	mul
+	popl	0
 	pushl	-3
 	pushc	1
 	sub
-	call	_factorial
-	drop	1
-	pushr
-	mul
+	popl	-3
+__3:
+	pushl	-3
+	pushc	0
+	gt
+	brt	__2
+__4:
+	pushl	0
 	popr
 	jmp	__1
-__3:
 __1:
 	rsf
 	ret

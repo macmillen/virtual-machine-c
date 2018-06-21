@@ -1,7 +1,7 @@
 //
 // version
 //
-	.vers	5
+	.vers	6
 
 //
 // execution framework
@@ -89,38 +89,61 @@ _main:
 	call	_readInteger
 	pushr
 	popl	0
-	call	_readInteger
+	pushl	0
+	call	_factorial
+	drop	1
 	pushr
 	popl	1
-	jmp	__2
-__1:
 	pushl	0
+	call	_writeInteger
+	drop	1
+	pushc	33
+	call	_writeCharacter
+	drop	1
+	pushc	32
+	call	_writeCharacter
+	drop	1
+	pushc	61
+	call	_writeCharacter
+	drop	1
+	pushc	32
+	call	_writeCharacter
+	drop	1
 	pushl	1
-	gt
-	brf	__4
-	pushl	0
-	pushl	1
-	sub
-	popl	0
-	jmp	__5
-__4:
-	pushl	1
-	pushl	0
-	sub
-	popl	1
-__5:
-__2:
-	pushl	0
-	pushl	1
-	ne
-	brt	__1
-__3:
-	pushl	0
 	call	_writeInteger
 	drop	1
 	pushc	10
 	call	_writeCharacter
 	drop	1
 __0:
+	rsf
+	ret
+
+//
+// Integer factorial(Integer)
+//
+_factorial:
+	asf	0
+	pushl	-3
+	pushc	0
+	eq
+	brf	__2
+	pushc	1
+	popr
+	jmp	__1
+	jmp	__3
+__2:
+	pushl	-3
+	pushl	-3
+	pushc	1
+	sub
+	call	_factorial
+	drop	1
+	pushr
+	mul
+	popr
+	jmp	__1
+__3:
+__1:
 	rsf
 	ret
