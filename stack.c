@@ -22,39 +22,51 @@ int *breakpoints;
 bool running = false;
 
 void pusha(int v) {
-    if(sp < stackS - 1) {
+    if(sp < stackS) {
         stack[sp].isObjRef = false;
         stack[sp].u.number = v;
         sp++;
     } else {
+        printf("Error: stack overflow\n");
         exit(-1);
     }
 }
 
 void pusho(ObjRef objRef) {
-    if(sp < stackS - 1) {
+    if(sp < stackS) {
         stack[sp].isObjRef = true;
         stack[sp].u.objRef = objRef;
         sp++;
     } else {
+        printf("Error: stack overflow\n");
         exit(-1);
     }
 }
 
 int popa(void) {
-    if(sp > 0 && !stack[sp - 1].isObjRef) {
+    if(sp > 0) {
         sp--;
+        if(stack[sp].isObjRef) {
+            printf("Error: element is not an address\n");
+            exit(-1);
+        }
         return stack[sp].u.number;
     } else {
+        printf("Error: stack underflow\n");
         exit(-1);
     }
 }
 
 ObjRef popo(void) {
-    if(sp > 0 && stack[sp - 1].isObjRef) {
+    if(sp > 0) {
         sp--;
+        if(!stack[sp].isObjRef) {
+            printf("Error: topObjRef detected number on top of stack\n");
+            exit(-1);
+        }
         return stack[sp].u.objRef;
     } else {
+        printf("Error: stack underflow\n");
         exit(-1);
     }
 }
@@ -144,6 +156,10 @@ void rsf(void) {
 }
 
 void pushl(void) {
+    if(!stack[fp + val].isObjRef) {
+        printf("Error: PUSHL detected number in local or parameter variable");
+        exit(-1);
+    }
     pusho(stack[fp + val].u.objRef);
 }
 
@@ -241,8 +257,12 @@ void popr(void) {
 
 void dup(void) { //TODO: cloning object
     ObjRef v = popo();
-    pusho(v);
-    pusho(v);
+    bip.op1 = v;
+    int x = bigToInt();
+    bigFromInt(x);
+    pusho(bip.res);
+    bigFromInt(x);
+    pusho(bip.res);
 }
 
 void listProgram(int pc, bool all) {

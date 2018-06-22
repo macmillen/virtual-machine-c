@@ -1,0 +1,2 @@
+Ninja Virtual Machine started
+Error: topObjRef detected number on top of stack

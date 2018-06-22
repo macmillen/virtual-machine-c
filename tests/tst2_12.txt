@@ -1,1 +1,2 @@
 Ninja Virtual Machine started
+Error: no digits in input

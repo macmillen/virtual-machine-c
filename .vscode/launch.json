@@ -9,7 +9,7 @@
             "type": "cppdbg",
             "request": "launch",
             "program": "${workspaceFolder}/njvm",
-            "args": ["programs/prog1.bin"],
+            "args": ["programs/prog21.bin"],
             "stopAtEntry": false,
             "cwd": "${workspaceRoot}",
             "environment": [],

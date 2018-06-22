@@ -1,3 +1,5 @@
 Ninja Virtual Machine started
-28
+11
+22
+33
 Ninja Virtual Machine stopped

@@ -14,7 +14,7 @@
  * It should print the error message and terminate the program.
  */
 void fatalError(char *msg) {
-  printf("Fatal error: %s\n", msg);
+  printf("Error: %s\n", msg);
   exit(1);
 }
 
