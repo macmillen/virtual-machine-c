@@ -255,14 +255,56 @@ void popr(void) {
     retVal = v;
 }
 
-void dup(void) { //TODO: cloning object
+void dup(void) {
     ObjRef v = popo();
-    bip.op1 = v;
-    int x = bigToInt();
-    bigFromInt(x);
-    pusho(bip.res);
-    bigFromInt(x);
-    pusho(bip.res);
+    pusho(v);
+    pusho(v);
+}
+
+void new(void) {
+    ObjRef v = newComplexObject(val);
+    pusho(v);
+}
+
+void getf(void) { // TODO: check ob offset über data größe hinaus geht und ob ObjRef ein komplexer Datentyp ist
+    ObjRef v = popo();
+    pusho(((ObjRef*)v -> data)[val]);
+}
+
+void putf(void) {
+
+}
+
+void newa(void) {
+
+}
+
+void getfa(void) {
+
+}
+
+void putfa(void) {
+
+}
+
+void getsz(void) {
+
+}
+
+void pushn(void) {
+    pusho(NULL);
+}
+
+void refeq(void) {
+    ObjRef v1 = popo();
+    ObjRef v2 = popo();
+    pushc(v1 == v2);
+}
+
+void refne(void) {
+    ObjRef v1 = popo();
+    ObjRef v2 = popo();
+    pushc(v1 != v2);
 }
 
 void listProgram(int pc, bool all) {
@@ -308,6 +350,16 @@ void listProgram(int pc, bool all) {
             case PUSHR: printf("%04d:\tPUSHR\t",   pc);      break;
             case POPR:  printf("%04d:\tPOPR\t",    pc);      break;
             case DUP:   printf("%04d:\tDUP\t",     pc);      break;
+            case NEW:   printf("%04d:\tNEW\t%d",   pc, val); break;
+            case GETF:  printf("%04d:\tGETF\t%d",  pc, val); break;
+            case PUTF:  printf("%04d:\tPUTF\t%d",  pc, val); break;
+            case NEWA:  printf("%04d:\tNEWA\t",    pc);      break;
+            case GETFA: printf("%04d:\tGETFA\t",   pc);      break;
+            case PUTFA: printf("%04d:\tPUTFA\t",   pc);      break;
+            case GETSZ: printf("%04d:\tGETSZ\t",   pc);      break;
+            case PUSHN: printf("%04d:\tPUSHN\t",   pc);      break;
+            case REFEQ: printf("%04d:\tREFEQ\t",   pc);      break;
+            case REFNE: printf("%04d:\tREFNE\t",   pc);      break;
         }
         pc++;
         printf("\n");
@@ -365,10 +417,10 @@ int execute(int ir) {
                         printf("object reference?\n");
                         char ref[30];
                         scanf("%s", ref);
-                        long unsigned int nux;
-                        sscanf(ref, "%lx", &nux);
+                        ObjRef nux;
+                        sscanf(ref, "%p", (void**)&nux);
                         for(int y = 0; y < stackS_G; y++) {
-                            if((long unsigned int)*(stack_G + y) == nux) {
+                            if((stack_G + y) == nux) {
                                 printf("value = %d\n", (int)(stack_G[y] -> data[0]));
                             }
                         }
@@ -440,7 +492,16 @@ int execute(int ir) {
         case PUSHR: pushr(); break;
         case POPR:  popr();  break;
         case DUP:   dup();   break;
+        case NEW:   new();   break;
+        case GETF:  getf();  break;
+        case PUTF:  putf();  break;
+        case NEWA:  newa();  break;
+        case GETFA: getfa(); break;
+        case PUTFA: putfa(); break;
+        case GETSZ: getsz(); break;
+        case PUSHN: pushn(); break;
+        case REFEQ: refeq(); break;
+        case REFNE: refne(); break;
     }
-
     return 1; 
 }

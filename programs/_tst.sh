@@ -14,6 +14,6 @@ do
     if [ "$diff" = "" ]; then
         hallo=$diff
     else
-        echo -e $RED Test "$z" FAILED: "$diff" $NC
+        echo -e $RED Test "$z" FAILED: "\n""$diff" $NC
     fi
 done

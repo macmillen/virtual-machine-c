@@ -42,3 +42,15 @@ ObjRef newPrimObject(int dataSize) {
   objRef->size = dataSize;
   return objRef;
 }
+
+ObjRef newComplexObject(int numberOfObjects) {
+  ObjRef objRef;
+
+  objRef = malloc(sizeof(unsigned int) +
+                  numberOfObjects * sizeof(ObjRef));
+  if (objRef == NULL) {
+    fatalError("newPrimObject() got no memory");
+  }
+  objRef->size = numberOfObjects;
+  return objRef;
+}

@@ -74,4 +74,18 @@ extern int *memory;
 
 #define DUP 31
 
+#define NEW 32
+#define GETF 33
+#define PUTF 34
+
+#define NEWA 35
+#define GETFA 36
+#define PUTFA 37
+
+#define GETSZ 38
+
+#define PUSHN 39
+#define REFEQ 40
+#define REFNE 41
+
 #endif

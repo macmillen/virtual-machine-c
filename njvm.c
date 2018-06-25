@@ -7,10 +7,8 @@
 #include "check_input.h"
 
 // TODOS
-// Frage: support.c nicht includen?
-// cloning object / duplicate()
 
-unsigned int version = 6;
+unsigned int version = 7;
 unsigned int versionBin;
 unsigned int numberOfInstructions;
 unsigned int stackS_G;
