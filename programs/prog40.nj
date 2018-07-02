@@ -1,0 +1,34 @@
+//
+// listrev.nj -- reverse a list
+//
+
+type List = record {
+  Integer v1;
+  Integer v2;
+};
+
+void printList(List list) {
+    writeInteger(list.v1);
+  writeCharacter('\n');
+    writeInteger(list.v2);
+    writeCharacter(' ');
+  writeCharacter('\n');
+}
+
+void main() {
+  local Integer i;
+  local List list;
+  local List aux;
+  i = 2;
+  list = nil;
+  while (i >= 1) {
+    aux = new(List);
+    aux.v1 = i;
+    aux.v2 = i * 10;
+    list = aux;
+    i = i - 1;
+  }
+  printList(list);
+//  list = reverse(list);
+//  printList(list);
+}

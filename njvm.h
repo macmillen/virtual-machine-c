@@ -1,6 +1,6 @@
 #include <stdbool.h>
 #include <stdio.h>
-#include "bigint/build/include/support.h"
+#include "include/support.h"
 
 #ifndef __NJVM_H_
 #define __NJVM_H_

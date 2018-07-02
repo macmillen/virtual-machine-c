@@ -5,7 +5,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
+#include "../stack.h"
 #include "support.h"
 
 
@@ -43,14 +43,20 @@ ObjRef newPrimObject(int dataSize) {
   return objRef;
 }
 
-ObjRef newComplexObject(int numberOfObjects) {
+ObjRef newComplexObject(unsigned int numberOfObjects) {
   ObjRef objRef;
-
+//0x555555782f44
   objRef = malloc(sizeof(unsigned int) +
                   numberOfObjects * sizeof(ObjRef));
   if (objRef == NULL) {
     fatalError("newPrimObject() got no memory");
   }
+  for(int i = 0; i < numberOfObjects; i++) {
+    GET_REFS(objRef)[i] = NULL;
+  }
+
+  numberOfObjects = numberOfObjects | MSB;
+  
   objRef->size = numberOfObjects;
   return objRef;
 }

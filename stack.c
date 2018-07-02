@@ -3,9 +3,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "stack.h"
 #include "njvm.h"
-#include "bigint/build/include/bigint.h"
-#include "bigint/build/include/support.h"
+#include "include/bigint.h"
+#include "include/support.h"
 
 int op;
 int val;
@@ -147,7 +148,10 @@ void popg(void) {
 void asf(void) {
     pusha(fp);
     fp = sp;
-    sp = sp + val;
+    int x = sp;
+    while(sp < x + val) {
+        pushn();
+    }
 }
 
 void rsf(void) {
@@ -266,29 +270,80 @@ void new(void) {
     pusho(v);
 }
 
-void getf(void) { // TODO: check ob offset über data größe hinaus geht und ob ObjRef ein komplexer Datentyp ist
+void getf(void) {
     ObjRef v = popo();
-    pusho(((ObjRef*)v -> data)[val]);
+    if(GET_SIZE(v) < val) {
+        printf("Out of boundaries exception");
+        exit(-1);
+    }
+    if(IS_PRIM(v)) {
+        printf("Object is no compound object");
+        exit(-1);
+    }
+    pusho(GET_REFS(v)[val]);
 }
 
 void putf(void) {
-
+    ObjRef value = popo();
+    ObjRef object = popo();
+    if(GET_SIZE(object) < val) {
+        printf("Out of boundaries exception");
+        exit(-1);
+    }
+    if(IS_PRIM(object)) {
+        printf("Object is no compound object");
+        exit(-1);
+    }
+    GET_REFS(object)[val] = value;
 }
 
 void newa(void) {
-
+    bip.op1 = popo();
+    int c = bigToInt();
+    ObjRef o = newComplexObject(c);
+    pusho(o);
 }
 
 void getfa(void) {
-
+    bip.op1 = popo();
+    int i = bigToInt();
+    ObjRef a = popo();
+    if(GET_SIZE(a) < i) {
+        printf("Out of boundaries exception");
+        exit(-1);
+    }
+    if(IS_PRIM(a)) {
+        printf("Object is no compound object");
+        exit(-1);
+    }
+    pusho(GET_REFS(a)[i]);
 }
 
 void putfa(void) {
-
+    ObjRef v = popo();
+    bip.op1 = popo();
+    int i = bigToInt();
+    ObjRef a = popo();
+    if(GET_SIZE(a) < i) {
+        printf("Out of boundaries exception");
+        exit(-1);
+    }
+    if(IS_PRIM(a)) {
+        printf("Object is no compound object");
+        exit(-1);
+    }
+    GET_REFS(a)[i] = v;
 }
 
 void getsz(void) {
-
+    ObjRef o = popo();
+    bool isPrim = IS_PRIM(o);
+    int s = GET_SIZE(o);
+    if(isPrim) {
+        s = -1;
+    }
+    bigFromInt(s);
+    pusho(bip.res);
 }
 
 void pushn(void) {
@@ -318,7 +373,7 @@ void listProgram(int pc, bool all) {
         val = SIGN_EXTEND(ir & 0x00FFFFFF);
         
         switch(op) {    
-            case HALT:  printf("%04d:\tHALT\t\n",  pc);      return;
+            case HALT:  printf("%04d:\tHALT\t\n",  pc);      break;
             case PUSHC: printf("%04d:\tPUSHC\t%d", pc, val); break;
             case ADD:   printf("%04d:\tADD\t",     pc);      break;
             case SUB:   printf("%04d:\tSUB\t",     pc);      break;
@@ -364,7 +419,7 @@ void listProgram(int pc, bool all) {
         pc++;
         printf("\n");
         if(!all) return;
-    } while(1);
+    } while(pc < numberOfInstructions);
 }
 
 int execute(int ir) {
@@ -414,15 +469,24 @@ int execute(int ir) {
                         }
                         printf("        --- end of data ---\n");
                     } else if(!strncmp(in, "object", 1)) {
+
                         printf("object reference?\n");
                         char ref[30];
                         scanf("%s", ref);
                         ObjRef nux;
                         sscanf(ref, "%p", (void**)&nux);
-                        for(int y = 0; y < stackS_G; y++) {
-                            if((stack_G + y) == nux) {
-                                printf("value = %d\n", (int)(stack_G[y] -> data[0]));
+                        unsigned int zeroes = __builtin_clz(nux -> size);
+
+                        if(zeroes == 0) {  // Complex Object
+                            printf("<compound object>\n");
+                            for(int b = 0; b < GET_SIZE(nux); b++) {
+                                printf("field[%04d]:\t(objref) %p\n", b, (void *)GET_REFS(nux)[b]);
                             }
+                        } else {           // Primitive Object
+                            printf("value = ");
+                            bip.op1 = nux;
+                            bigPrint(stdout);
+                            printf("\n");
                         }
                     }
                     continue;
