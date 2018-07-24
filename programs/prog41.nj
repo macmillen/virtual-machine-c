@@ -1,0 +1,21 @@
+
+type List = record {
+  Integer v1;
+  Integer v2;
+};
+
+void printList(List list) {
+    writeInteger(list.v1);
+  writeCharacter('\n');
+    writeInteger(list.v2);
+    writeCharacter(' ');
+  writeCharacter('\n');
+}
+
+void main() {
+  local List list;
+    list = new(List);
+    list.v1 = 12;
+    list.v2 = 15;
+  printList(list);
+}

@@ -3,7 +3,10 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <string.h>
+#include "stack.h"
 #include "njvm.h"
+#include "include/bigint.h"
+#include "include/support.h"
 
 int op;
 int val;
@@ -12,7 +15,6 @@ StackSlot stack[10000];
 int sp = 0;
 int fp = 0;
 ObjRef retVal;
-int pushcParam = 0;
 
 int stackH_G = 0;
 
@@ -20,35 +22,52 @@ int *breakpoints;
 
 bool running = false;
 
-void push(int v) {
-    if(sp < stackS - 1) {
+void pusha(int v) {
+    if(sp < stackS) {
         stack[sp].isObjRef = false;
         stack[sp].u.number = v;
         sp++;
     } else {
+        printf("Error: stack overflow\n");
         exit(-1);
     }
 }
 
 void pusho(ObjRef objRef) {
-    if(sp < stackS - 1) {
+    if(sp < stackS) {
         stack[sp].isObjRef = true;
         stack[sp].u.objRef = objRef;
         sp++;
     } else {
+        printf("Error: stack overflow\n");
         exit(-1);
     }
 }
 
-int pop(void) {
+int popa(void) {
     if(sp > 0) {
         sp--;
         if(stack[sp].isObjRef) {
-            return *(int *)stack[sp].u.objRef -> data;
-        } else {
-            return stack[sp].u.number;
+            printf("Error: element is not an address\n");
+            exit(-1);
         }
+        return stack[sp].u.number;
     } else {
+        printf("Error: stack underflow\n");
+        exit(-1);
+    }
+}
+
+ObjRef popo(void) {
+    if(sp > 0) {
+        sp--;
+        if(!stack[sp].isObjRef) {
+            printf("Error: topObjRef detected number on top of stack\n");
+            exit(-1);
+        }
+        return stack[sp].u.objRef;
+    } else {
+        printf("Error: stack underflow\n");
         exit(-1);
     }
 }
@@ -57,77 +76,65 @@ int halt(void) {
     return 0;
 }
 
-ObjRef createInt(int v) {
-    ObjRef objRef;
-    objRef = malloc(sizeof(unsigned int) + sizeof(int));
-    objRef -> size = sizeof(int);
-    *(int *) objRef -> data = v;
-    return objRef;
-}
-
 void pushc(int v) {
-    ObjRef objRef = createInt(v);
-    pusho(objRef);
+    bigFromInt(v);
+    pusho(bip.res);
 }
 
 void add(void) {
-    int val1 = pop();
-    int val2 = pop();
-    pushc(val2 + val1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigAdd();
+    pusho(bip.res);
 }
 
 void sub(void) {
-    int val1 = pop();
-    int val2 = pop();
-    pushc(val2 - val1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigSub();
+    pusho(bip.res);
 }
 
 void mul(void) {
-    int val1 = pop();
-    int val2 = pop();
-    pushc(val2 * val1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigMul();
+    pusho(bip.res);
 }
 
 void div_(void) {
-    int val1 = pop();
-    int val2 = pop();
-    
-    if(val1 != 0) {
-        pushc(val2 / val1);
-    } else {
-        exit(-1);
-    }
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigDiv();
+    pusho(bip.res);
 }
 
 void mod(void) {
-    int val1 = pop();
-    int val2 = pop();
-
-    if(val1 != 0) {
-        pushc(val2 % val1);
-    } else {
-        exit(-1);
-    }
+    bip.op2 = popo();
+    bip.op1 = popo();
+    bigDiv();
+    pusho(bip.rem);
 }
 
 void rdint(void) {
-    scanf("%d", &val);
-    pushc(val);
+    bigRead(stdin);
+    pusho(bip.res);
 }
 
 void wrint(void) {
-    int val = pop();
-    printf("%d", val);
+    bip.op1 = popo();
+    bigPrint(stdout);
 }
 
 void rdchr(void) {
-    val = getchar();
+    char val = getchar();
     pushc(val);
 }
 
 void wrchr(void) {
-    char val = pop();
-    printf("%c", val);
+    bip.op1 = popo();
+    char res = bigToInt();
+    printf("%c", res);
 }
 
 void pushg(void) {
@@ -135,67 +142,77 @@ void pushg(void) {
 }
 
 void popg(void) {
-    stack_G[val] = stack[sp - 1].u.objRef;
-    pop();
+    stack_G[val] = popo();
 }
 
 void asf(void) {
-    push(fp);
+    pusha(fp);
     fp = sp;
-    sp = sp + val;
+    int x = sp;
+    while(sp < x + val) {
+        pushn();
+    }
 }
 
 void rsf(void) {
     sp = fp;
-    fp = pop();
+    fp = popa();
 }
 
 void pushl(void) {
-    push(*(int *)stack[fp + val].u.objRef -> data);
+    if(!stack[fp + val].isObjRef) {
+        printf("Error: PUSHL detected number in local or parameter variable");
+        exit(-1);
+    }
+    pusho(stack[fp + val].u.objRef);
 }
 
 void popl(void) {
-    int v = pop();
-    ObjRef objRef = createInt(v);
+    ObjRef v = popo();
     stack[fp + val].isObjRef = true;
-    stack[fp + val].u.objRef = objRef;
-    *(int *) stack[fp + val].u.objRef -> data = v;
+    stack[fp + val].u.objRef = v;
 }
 
 void eq(void) {
-    int n1 = pop();
-    int n2 = pop();
-    push(n2 == n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res == 0);
 }
 
 void ne(void) {
-    int n1 = pop();
-    int n2 = pop();
-    push(n2 != n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res != 0);
 }
 
 void lt(void) {
-    int n1 = pop();
-    int n2 = pop();
-    push(n2 < n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res < 0);
 }
 
 void le(void) {
-    int n1 = pop();
-    int n2 = pop();
-    push(n2 <= n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res < 0 || res == 0);
 }
 
 void gt(void) {
-    int n1 = pop();
-    int n2 = pop();
-    push(n2 > n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res > 0);
 }
 
 void ge(void) {
-    int n1 = pop();
-    int n2 = pop();
-    push(n2 >= n1);
+    bip.op2 = popo();
+    bip.op1 = popo();
+    int res = bigCmp();
+    pushc(res > 0 || res == 0);
 }
 
 void jmp(void) {
@@ -203,48 +220,147 @@ void jmp(void) {
 }
 
 void brf(void) {
-    int b = pop();
+    bip.op1 = popo();
+    int b = bigToInt();
     if(!b) {
         pc = val;
     }
 }
 
 void brt(void) {
-    int b = pop();
+    bip.op1 = popo();
+    int b = bigToInt();
     if(b) {
         pc = val;
     }
 }
 
 void call(void) {
-    push(pc);
+    pusha(pc);
     jmp();
 }
 
 void ret(void) {
-    pc = pop();
+    pc = popa();
 }
 
 void drop(void) {
     for(int i = 0; i < val; i++) {
-        pop();
+        popo();
     }
 }
 
 void pushr(void) {
-    push(retVal);
+    pusho(retVal);
 }
 
 void popr(void) {
-    retVal = pop();
+    ObjRef v = popo();
+    retVal = v;
 }
 
 void dup(void) {
-    int v = pop();
-    push(v);
-    push(v);
+    ObjRef v = popo();
+    pusho(v);
+    pusho(v);
 }
 
+void new(void) {
+    ObjRef v = newComplexObject(val);
+    pusho(v);
+}
+
+void getf(void) {
+    ObjRef v = popo();
+    if(GET_SIZE(v) < val) {
+        printf("Out of boundaries exception");
+        exit(-1);
+    }
+    if(IS_PRIM(v)) {
+        printf("Object is no compound object");
+        exit(-1);
+    }
+    pusho(GET_REFS(v)[val]);
+}
+
+void putf(void) {
+    ObjRef value = popo();
+    ObjRef object = popo();
+    if(GET_SIZE(object) < val) {
+        printf("Out of boundaries exception");
+        exit(-1);
+    }
+    if(IS_PRIM(object)) {
+        printf("Object is no compound object");
+        exit(-1);
+    }
+    GET_REFS(object)[val] = value;
+}
+
+void newa(void) {
+    bip.op1 = popo();
+    int c = bigToInt();
+    ObjRef o = newComplexObject(c);
+    pusho(o);
+}
+
+void getfa(void) {
+    bip.op1 = popo();
+    int i = bigToInt();
+    ObjRef a = popo();
+    if(GET_SIZE(a) < i) {
+        printf("Out of boundaries exception");
+        exit(-1);
+    }
+    if(IS_PRIM(a)) {
+        printf("Object is no compound object");
+        exit(-1);
+    }
+    pusho(GET_REFS(a)[i]);
+}
+
+void putfa(void) {
+    ObjRef v = popo();
+    bip.op1 = popo();
+    int i = bigToInt();
+    ObjRef a = popo();
+    if(GET_SIZE(a) < i) {
+        printf("Out of boundaries exception");
+        exit(-1);
+    }
+    if(IS_PRIM(a)) {
+        printf("Object is no compound object");
+        exit(-1);
+    }
+    GET_REFS(a)[i] = v;
+}
+
+void getsz(void) {
+    ObjRef o = popo();
+    bool isPrim = IS_PRIM(o);
+    int s = GET_SIZE(o);
+    if(isPrim) {
+        s = -1;
+    }
+    bigFromInt(s);
+    pusho(bip.res);
+}
+
+void pushn(void) {
+    pusho(NULL);
+}
+
+void refeq(void) {
+    ObjRef v1 = popo();
+    ObjRef v2 = popo();
+    pushc(v1 == v2);
+}
+
+void refne(void) {
+    ObjRef v1 = popo();
+    ObjRef v2 = popo();
+    pushc(v1 != v2);
+}
 
 void listProgram(int pc, bool all) {
     int ir = 0;
@@ -257,7 +373,7 @@ void listProgram(int pc, bool all) {
         val = SIGN_EXTEND(ir & 0x00FFFFFF);
         
         switch(op) {    
-            case HALT:  printf("%04d:\tHALT\t\n",  pc);      return;
+            case HALT:  printf("%04d:\tHALT\t\n",  pc);      break;
             case PUSHC: printf("%04d:\tPUSHC\t%d", pc, val); break;
             case ADD:   printf("%04d:\tADD\t",     pc);      break;
             case SUB:   printf("%04d:\tSUB\t",     pc);      break;
@@ -289,11 +405,21 @@ void listProgram(int pc, bool all) {
             case PUSHR: printf("%04d:\tPUSHR\t",   pc);      break;
             case POPR:  printf("%04d:\tPOPR\t",    pc);      break;
             case DUP:   printf("%04d:\tDUP\t",     pc);      break;
+            case NEW:   printf("%04d:\tNEW\t%d",   pc, val); break;
+            case GETF:  printf("%04d:\tGETF\t%d",  pc, val); break;
+            case PUTF:  printf("%04d:\tPUTF\t%d",  pc, val); break;
+            case NEWA:  printf("%04d:\tNEWA\t",    pc);      break;
+            case GETFA: printf("%04d:\tGETFA\t",   pc);      break;
+            case PUTFA: printf("%04d:\tPUTFA\t",   pc);      break;
+            case GETSZ: printf("%04d:\tGETSZ\t",   pc);      break;
+            case PUSHN: printf("%04d:\tPUSHN\t",   pc);      break;
+            case REFEQ: printf("%04d:\tREFEQ\t",   pc);      break;
+            case REFNE: printf("%04d:\tREFNE\t",   pc);      break;
         }
         pc++;
         printf("\n");
         if(!all) return;
-    } while(1);
+    } while(pc < numberOfInstructions);
 }
 
 int execute(int ir) {
@@ -311,35 +437,64 @@ int execute(int ir) {
                 listProgram(pc - 1, false);
                 printf("DEBUG: inspect, list, breakpoint, step, run, quit?\n");
                 scanf("%s", input);
-                if(!strcmp(input, "inspect")) {
-                    printf("DEBUG [inspect]: stack, data?\n");
+                if(!strncmp(input, "inspect", 1)) {
+                    printf("DEBUG [inspect]: stack, data, object?\n");
                     char in[100];
                     scanf("%s", in);
-                    if(!strcmp(in, "stack")) {
+                    if(!strncmp(in, "stack", 1)) {
                         for(int i = sp; i >= 0; i--) {
-                            if(sp == fp) {
-                                printf("sp, fp\t--->\t%04d:\txxxx\n", i);
+                            bool isObjRef = stack[i].isObjRef;
+                            if(i == sp && sp == fp) {
+                                printf("sp, fp\t--->\t%04d:\t(xxxxxx) xxxxxx\n", i);
                             } else if(i == sp) {
-                                printf("sp\t--->\t%04d:\txxxx\n", i);
+                                printf("sp\t--->\t%04d:\t(xxxxxx) xxxxxx\n", i);
                             } else if(i == fp) {
-                                printf("fp\t--->\t%04d:\t%d\n", i, stack[i]);
+                                if(isObjRef) {
+                                    printf("fp\t--->\t%04d:\t(%s) %p\n", i, "objref", (void*)stack[i].u.objRef);
+                                } else {
+                                    printf("fp\t--->\t%04d:\t(%s) %d\n", i, "number", stack[i].u.number);
+                                }
                             } else {
-                                printf("\t\t%04d:\t%d\n", i, stack[i]);
+                                if(isObjRef) {
+                                    printf("\t\t%04d:\t(%s) %p\n", i, "objref", (void*)stack[i].u.objRef);
+                                } else {
+                                    printf("\t\t%04d:\t(%s) %d\n", i, "number", stack[i].u.number);
+                                }
                             }
                         }
                         printf("                --- bottom of stack ---\n");
-                    } else if(!strcmp(in, "data")) {
+                    } else if(!strncmp(in, "data", 1)) {
                         for(int i = 0; i < stackS_G; i++) {
-                            printf("data[%04d]:\t%d\n", i, stack_G[i]);
+                            printf("data[%04d]:\t%s %p\n", i, "(objref)", (void*)stack_G[i]);
                         }
                         printf("        --- end of data ---\n");
+                    } else if(!strncmp(in, "object", 1)) {
+
+                        printf("object reference?\n");
+                        char ref[30];
+                        scanf("%s", ref);
+                        ObjRef nux;
+                        sscanf(ref, "%p", (void**)&nux);
+                        unsigned int zeroes = __builtin_clz(nux -> size);
+
+                        if(zeroes == 0) {  // Complex Object
+                            printf("<compound object>\n");
+                            for(int b = 0; b < GET_SIZE(nux); b++) {
+                                printf("field[%04d]:\t(objref) %p\n", b, (void *)GET_REFS(nux)[b]);
+                            }
+                        } else {           // Primitive Object
+                            printf("value = ");
+                            bip.op1 = nux;
+                            bigPrint(stdout);
+                            printf("\n");
+                        }
                     }
                     continue;
-                } else if(!strcmp(input, "list")) {
+                } else if(!strncmp(input, "list", 1)) {
                     listProgram(0, true);
                     printf("        --- end of code ---\n");
                     continue;
-                } else if(!strcmp(input, "breakpoint")) {
+                } else if(!strncmp(input, "breakpoint", 1)) {
                     printf("DEBUG [breakpoint]: address to set, -1 to clear\n");
                     running = false;
                     int pos = 0;
@@ -354,11 +509,11 @@ int execute(int ir) {
                         }
                     }
                     continue;
-                } else if(!strcmp(input, "step")) {
+                } else if(!strncmp(input, "step", 1)) {
                     // do nothing
-                } else if(!strcmp(input, "run")) {
+                } else if(!strncmp(input, "run", 1)) {
                     running = true;
-                } else if(!strcmp(input, "quit")) {
+                } else if(!strncmp(input, "quit", 1)) {
                     return 0;
                 } else {
                     continue;
@@ -401,7 +556,16 @@ int execute(int ir) {
         case PUSHR: pushr(); break;
         case POPR:  popr();  break;
         case DUP:   dup();   break;
+        case NEW:   new();   break;
+        case GETF:  getf();  break;
+        case PUTF:  putf();  break;
+        case NEWA:  newa();  break;
+        case GETFA: getfa(); break;
+        case PUTFA: putfa(); break;
+        case GETSZ: getsz(); break;
+        case PUSHN: pushn(); break;
+        case REFEQ: refeq(); break;
+        case REFNE: refne(); break;
     }
-
     return 1; 
 }

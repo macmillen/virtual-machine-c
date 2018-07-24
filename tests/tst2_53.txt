@@ -1,0 +1,2 @@
+Ninja Virtual Machine started
+Error: big integer library detected illegal nil reference

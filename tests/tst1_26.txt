@@ -1,0 +1,1 @@
+Error: file 'programs/prog26.bin' has wrong version number

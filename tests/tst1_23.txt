@@ -1,0 +1,1 @@
+Error: file 'programs/prog23.bin' has wrong version number

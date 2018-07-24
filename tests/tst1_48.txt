@@ -1,0 +1,2 @@
+Ninja Virtual Machine started
+Error: PUSHL detected number in local or parameter variable

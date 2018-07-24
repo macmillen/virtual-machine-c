@@ -1,13 +1,9 @@
 #include <stdbool.h>
 #include <stdio.h>
+#include "include/support.h"
 
 #ifndef __NJVM_H_
 #define __NJVM_H_
-
-typedef struct {
-    unsigned int size; /* byte count of payload data */
-    unsigned char data[1]; /* payload data , size as needed */
-} *ObjRef;
 
 typedef struct {
     bool isObjRef;
@@ -77,5 +73,19 @@ extern int *memory;
 #define POPR 30
 
 #define DUP 31
+
+#define NEW 32
+#define GETF 33
+#define PUTF 34
+
+#define NEWA 35
+#define GETFA 36
+#define PUTFA 37
+
+#define GETSZ 38
+
+#define PUSHN 39
+#define REFEQ 40
+#define REFNE 41
 
 #endif

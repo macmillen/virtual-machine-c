@@ -1,0 +1,1 @@
+Error: file 'programs/prog46.bin' has wrong version number

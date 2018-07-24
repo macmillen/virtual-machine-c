@@ -1,0 +1,1 @@
+Error: file 'programs/prog51.bin' has wrong version number

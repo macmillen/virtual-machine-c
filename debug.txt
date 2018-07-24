@@ -11,6 +11,8 @@ Nach der Eingabe kommt eine Unterabfrage, wo man sich zwischen "stack" und "data
     des Frame Pointers und des Stack Pointers
 #2) Bei Eingabe von "data":
     Nun werden alle globalen Variablen aufgelistet
+#3) Bei Eingabe von "object":
+    Nun können Sie eine Adresse eingeben, die den Inhalt eines komplexen Objektes oder den Wert eines primitiven Objektes anzeigt.
 
 ##### (2) list       #####
 
