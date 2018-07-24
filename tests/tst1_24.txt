@@ -1,2 +1,1 @@
-Ninja Virtual Machine started
-Error: stack overflow
+Error: file 'programs/prog24.bin' has wrong version number

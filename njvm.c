@@ -8,7 +8,7 @@
 
 // TODOS
 
-unsigned int version = 7;
+unsigned int version = 8;
 unsigned int versionBin;
 unsigned int numberOfInstructions;
 unsigned int stackS_G;

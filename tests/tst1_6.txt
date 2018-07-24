@@ -1,3 +1,0 @@
-Ninja Virtual Machine started
--1000
-Ninja Virtual Machine stopped

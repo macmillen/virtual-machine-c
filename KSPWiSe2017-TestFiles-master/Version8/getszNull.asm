@@ -1,3 +1,0 @@
-pushn
-getsz
-

@@ -1,3 +1,1 @@
-Ninja Virtual Machine started
-1,000000000
-Ninja Virtual Machine stopped
+Version is not identical

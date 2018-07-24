@@ -1,12 +1,1 @@
-Ninja Virtual Machine started
-
-7/1  4/1  
-6/1  5/1  
-
-5/11  -4/11  
--6/11  7/11  
-
-7/1  4/1  
-6/1  5/1  
-
-Ninja Virtual Machine stopped
+Error: file 'programs/prog47.bin' has wrong version number

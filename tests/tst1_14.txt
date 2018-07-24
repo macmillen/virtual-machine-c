@@ -1,3 +1,1 @@
-Ninja Virtual Machine started
--1000! = 1
-Ninja Virtual Machine stopped
+Error: file 'programs/prog14.bin' has wrong version number
